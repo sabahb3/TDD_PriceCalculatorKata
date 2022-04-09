@@ -7,10 +7,13 @@ namespace PriceCalculatorKata.Test;
 public class ProductTest
 {
     private Mock<ITax> _tax;
+    private Product _product;
 
     public ProductTest()
     {
         _tax = new Mock<ITax>();
+         _product = new Product(12345,"The Little Prince",20.25,_tax.Object);
+
     }
 
     [Fact]
@@ -18,13 +21,12 @@ public class ProductTest
     {
         // Arrange
         _tax.Setup(x => x.TaxValue).Returns(20);
-        var product = new Product(12345,"The Little Prince",20.25,_tax.Object);
 
         // Act
-        var taxAmount = product.Tax;
+        var taxAmount = _product.Tax;
         
         // Assert
-        Assert.Equal(20.25,product.Price);
+        Assert.Equal(20.25,_product.Price);
         Assert.Equal(4.05,taxAmount);
     }
 }

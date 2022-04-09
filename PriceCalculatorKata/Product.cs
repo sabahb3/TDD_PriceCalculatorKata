@@ -1,18 +1,21 @@
+using PriceCalculatorKata.Interfaces;
+
 namespace PriceCalculatorKata;
 
 public class Product
 {
-    public Product(int i, string theLittlePrince, double d)
+    private ITax _tax;
+    public Product(int upc, string name, double price, ITax tax)
     {
-        throw new NotImplementedException();
+        UPC = upc;
+        Name = name ?? String.Empty;
+        Price = price;
+        _tax = tax;
     }
 
-    public  double Price { get; set; }
+    public  double Price { get; private set; }
+    public int UPC { get; private set; }
+    public string Name { get; set; }=String.Empty;
 
-
-    public object GetTax()
-    {
-        throw new NotImplementedException();
-    }
-
+    public double Tax => Price * (_tax.TaxValue / 100.0);
 }
