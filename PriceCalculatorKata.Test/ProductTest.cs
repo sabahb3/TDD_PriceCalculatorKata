@@ -24,9 +24,27 @@ public class ProductTest
 
         // Act
         var taxAmount = _product.Tax;
+        var finalPrice = _product.FinalPrice;
         
         // Assert
         Assert.Equal(20.25,_product.Price);
         Assert.Equal(4.05,taxAmount);
+        Assert.Equal(24.30,finalPrice);
+    }
+    
+    [Fact]
+    public void ShouldCalculateTaxAmountBasedOnProductPriceWhenTaxIs21Percent()
+    {
+        // Arrange
+        _tax.Setup(x => x.TaxValue).Returns(21);
+
+        // Act
+        var taxAmount = _product.Tax;
+        var finalPrice = _product.FinalPrice;
+        
+        // Assert
+        Assert.Equal(20.25,_product.Price);
+        Assert.Equal(4.25,taxAmount);
+        Assert.Equal(24.50,finalPrice);
     }
 }
