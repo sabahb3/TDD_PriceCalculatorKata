@@ -6,13 +6,15 @@ namespace PriceCalculatorKata;
 public class Product
 {
     private ITax _tax;
+    private IDiscount _universalDiscount;
     private double _price;
-    public Product(int upc, string name, double price, ITax tax)
+    public Product(int upc, string name, double price, ITax tax,IDiscount universalDiscount)
     {
         UPC = upc;
         Name = name ?? String.Empty;
         Price = price;
         _tax = tax;
+        _universalDiscount = universalDiscount;
     }
 
     public double Price
@@ -41,8 +43,15 @@ public class Product
 
     public double FinalPrice
     {
-        get { return new FormattedDouble(Price + Tax).FormattedNumber; }
+        get { return new FormattedDouble(Price + Tax - Discount).FormattedNumber; }
     }
 
-    public double Discount { get; set; }
+    public double Discount
+    {
+        get
+        {
+            var discount = new FormattedDouble(_universalDiscount.DiscountValue / 100.0).FormattedNumber;
+            return new FormattedDouble(Price * discount).FormattedNumber;
+        }
+    }
 }
