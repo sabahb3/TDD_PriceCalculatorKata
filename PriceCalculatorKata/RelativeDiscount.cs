@@ -2,7 +2,7 @@ using PriceCalculatorKata.Interfaces;
 
 namespace PriceCalculatorKata;
 
-public class RelativeDiscount :IDiscount
+public class RelativeDiscount :Discount
 {
     private static readonly RelativeDiscount s_universalDiscount = new();
 
@@ -15,14 +15,6 @@ public class RelativeDiscount :IDiscount
     {
         return s_universalDiscount;
     }
-    public int DiscountValue { get; private set; }
-   
-    public void SetDiscount(string discount)
-    {
-        if (int.TryParse(discount, out var newDiscount))
-        {
-            DiscountValue = newDiscount;
-        }
-    }
+
     
 }

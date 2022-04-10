@@ -16,11 +16,9 @@ public class SelectiveDiscountTest
     {
         // Arrange
         var upc = 12345;
-        var discount = new Discount
-        {
-            DiscountValue=7
-        };
-        
+        var discount = new Discount();
+        discount.SetDiscount("7");
+
         // Act
         _specialDiscount.Add(upc, discount);
         var specialDiscountsCount = _specialDiscount.Count();
