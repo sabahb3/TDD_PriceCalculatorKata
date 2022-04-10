@@ -1,16 +1,25 @@
+using System.Globalization;
 using PriceCalculatorKata.Interfaces;
 
 namespace PriceCalculatorKata;
 
 public class Report
 {
-    public Report(IProduct productObject)
+    private IProduct _product;
+    public Report(IProduct product)
     {
-        throw new NotImplementedException();
+        _product = product;
     }
 
-    public IEnumerable<char> DisplayProductReport()
+    public string DisplayProductReport()
     {
-        throw new NotImplementedException();
+        int noDiscount = 0;
+        var finalPrice = _product.FinalPrice.ToString("#.00", CultureInfo.InvariantCulture);
+        var discount = _product.Discount.ToString("#.00", CultureInfo.InvariantCulture);
+        string message=$"price ${finalPrice} \n";
+        if(_product.Discount==noDiscount)
+            return message;
+        message += $"${discount} amount which was deduced";
+        return message;
     }
 }

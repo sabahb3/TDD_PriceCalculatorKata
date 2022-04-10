@@ -20,13 +20,16 @@ public class ReportTest
     }
     
     [Theory]
-    [InlineData(20,"price $21.26 \n $3.04 amount which was deduced")]
-    [InlineData(0,"price $24.30")]
-    public void ShouldReportTheProduct(int universalDiscount, string message )
+    [InlineData(20,3.04,21.26,"price $21.26 \n$3.04 amount which was deduced")]
+    [InlineData(0,0,24.30,"price $24.30 \n")]
+    public void ShouldReportTheProduct(int universalDiscount,double discountAmount,double finalPrce, string message )
     {
         // Arrange
         _tax.Setup(t => t.TaxValue).Returns(20);
         _UniversalDiscount.Setup(d => d.DiscountValue).Returns(universalDiscount);
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.Discount).Returns(discountAmount);
+        _product.Setup(p => p.FinalPrice).Returns(finalPrce);
 
         // Act
         var actualMessage = _report.DisplayProductReport();
