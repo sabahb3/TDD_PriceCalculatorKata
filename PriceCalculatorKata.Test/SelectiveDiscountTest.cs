@@ -1,0 +1,34 @@
+using Xunit;
+
+namespace PriceCalculatorKata.Test;
+
+public class SelectiveDiscountTest
+{
+    private SpecialDiscounts _specialDiscount;
+    public SelectiveDiscountTest()
+    {
+        _specialDiscount = new SpecialDiscounts();
+        
+    }
+
+    [Fact]
+    public void ShouldAddASpecialDiscount()
+    {
+        // Arrange
+        var upc = 12345;
+        var discount = new Discount
+        {
+            DiscountValue=7
+        };
+        
+        // Act
+        _specialDiscount.Add(upc, discount);
+        var specialDiscountsCount = _specialDiscount.Count();
+        var ContainsUpc = _specialDiscount.Contains(upc);
+        
+        // Assert
+        Assert.Equal(1,specialDiscountsCount);
+        Assert.Equal(true,ContainsUpc);
+    }
+    
+}
