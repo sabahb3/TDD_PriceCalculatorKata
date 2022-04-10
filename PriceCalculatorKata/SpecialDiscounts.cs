@@ -1,33 +1,40 @@
+using PriceCalculatorKata.Interfaces;
 namespace PriceCalculatorKata;
 
-public class SpecialDiscounts
+public class SpecialDiscounts: ISpecialDiscount
 {
-    private Dictionary<int, Discount> _specialDiscount;
+    private Dictionary<int, Discount> _specialDiscountContainer;
+    private static SpecialDiscounts _specialDiscounts= new SpecialDiscounts();
 
-    public SpecialDiscounts()
+    private SpecialDiscounts()
     {
-        _specialDiscount = new Dictionary<int, Discount>();
+        _specialDiscountContainer = new Dictionary<int, Discount>();
+    }
+
+    public static SpecialDiscounts GetInstance()
+    {
+        return _specialDiscounts;
     }
 
     public void Add(int upc, Discount discount)
     {
-        if (_specialDiscount.ContainsKey(upc))
+        if (_specialDiscountContainer.ContainsKey(upc))
         {
-            _specialDiscount[upc] = discount;
+            _specialDiscountContainer[upc] = discount;
         }
         else
         {
-            _specialDiscount.Add(upc,discount);
+            _specialDiscountContainer.Add(upc,discount);
         }
     }
 
     public int Count()
     {
-       return _specialDiscount.Count;
+       return _specialDiscountContainer.Count;
     }
 
     public bool Contains(int upc)
     {
-        return _specialDiscount.ContainsKey(upc);
+        return _specialDiscountContainer.ContainsKey(upc);
     }
 }

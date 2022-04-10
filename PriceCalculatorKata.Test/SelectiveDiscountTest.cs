@@ -7,8 +7,7 @@ public class SelectiveDiscountTest
     private SpecialDiscounts _specialDiscount;
     public SelectiveDiscountTest()
     {
-        _specialDiscount = new SpecialDiscounts();
-        
+        _specialDiscount = SpecialDiscounts.GetInstance();
     }
 
     [Fact]
