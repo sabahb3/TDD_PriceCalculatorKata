@@ -39,6 +39,8 @@ public class ProductTest
     public void ShouldTakeDiscountInAccountWhileCalculatingFinalPrice()
     {
         // Arrange
+        var value = Tax.GetTax();
+        
         _tax.Setup(x => x.TaxValue).Returns(20);
         _UniversalDiscount.Setup(d => d.DiscountValue).Returns(15);
     
@@ -54,6 +56,10 @@ public class ProductTest
         Assert.Equal(21.26,finalPrice);
     
     }
+
+
+    
+    
     
 
 }

@@ -3,7 +3,7 @@ using PriceCalculatorKata.Structures;
 
 namespace PriceCalculatorKata;
 
-public class Product
+public class Product: IProduct
 {
     private ITax _tax;
     private IDiscount _universalDiscount;
