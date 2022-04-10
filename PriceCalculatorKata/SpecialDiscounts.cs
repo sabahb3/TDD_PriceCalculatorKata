@@ -37,4 +37,9 @@ public class SpecialDiscounts: ISpecialDiscount
     {
         return _specialDiscountContainer.ContainsKey(upc);
     }
+
+    public void Remove(int upc)
+    {
+        if (Contains(upc)) _specialDiscountContainer.Remove(upc);
+    }
 }
