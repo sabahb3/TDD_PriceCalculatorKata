@@ -43,4 +43,6 @@ public class Product
     {
         get { return new FormattedDouble(Price + Tax).FormattedNumber; }
     }
+
+    public double Discount { get; set; }
 }
