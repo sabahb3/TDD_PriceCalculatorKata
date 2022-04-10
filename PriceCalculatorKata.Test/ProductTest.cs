@@ -9,6 +9,7 @@ public class ProductTest
     private Mock<ITax> _tax;
     private Product _product;
     private Mock<IDiscount> _UniversalDiscount;
+    private Mock<ISpecialDiscount> _UpcDiscounts;
 
     public ProductTest()
     {
@@ -57,9 +58,29 @@ public class ProductTest
     
     }
 
+    [Theory]
+    [InlineData(20, 15, 7, 12345,4.46,19.84, "price $19.84 \ntotal discount amount $4.46")]
+    [InlineData(21, 15, 7, 789, 3.04,21.46, "price $21.46 \ndiscount amount $3.04")]
+    public void ShouldTakeUpcDiscountInAccountWhileCalculatingFinalPrice(int tax, int universalDiscount,
+        int upcDiscount, int upcNumber,double totalDiscount,double finalPrice, string message)
+    {
+        // Arrange
+        _tax.Setup(x => x.TaxValue).Returns(tax);
+        _UniversalDiscount.Setup(ud => ud.DiscountValue).Returns(universalDiscount);
+        var upcD = new Discount();
+        upcD.SetDiscount(upcDiscount.ToString());
+        _UpcDiscounts.Setup(d => d.Add(upcNumber, upcD));
+        
+        // Act
+        var actualFinalPrice = _product.FinalPrice;
+        var discountAmount = _product.Discount;
+        
+        // Assert
+        Assert.Equal(totalDiscount,discountAmount);
+        Assert.Equal(finalPrice,actualFinalPrice);
+    }
 
-    
-    
-    
+
+
 
 }
