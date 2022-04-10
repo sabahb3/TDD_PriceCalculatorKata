@@ -15,36 +15,23 @@ public class ProductTest
          _product = new Product(12345,"The Little Prince",20.25,_tax.Object);
 
     }
-
-    [Fact]
-    public void ShouldCalculateTaxAmountBasedOnProductPrice()
-    {
-        // Arrange
-        _tax.Setup(x => x.TaxValue).Returns(20);
-
-        // Act
-        var taxAmount = _product.Tax;
-        var finalPrice = _product.FinalPrice;
-        
-        // Assert
-        Assert.Equal(20.25,_product.Price);
-        Assert.Equal(4.05,taxAmount);
-        Assert.Equal(24.30,finalPrice);
-    }
     
-    [Fact]
-    public void ShouldCalculateTaxAmountBasedOnProductPriceWhenTaxIs21Percent()
+    [Theory]
+    [InlineData(20,20.25,4.05,24.30)]
+    [InlineData(21,20.25,4.25,24.50)]
+
+    public void ShouldCalculateTaxAmountBasedOnProductPrice(int  tax, double price,double taxAmount,double finalPrice)
     {
         // Arrange
-        _tax.Setup(x => x.TaxValue).Returns(21);
+        _tax.Setup(x => x.TaxValue).Returns(tax);
 
         // Act
-        var taxAmount = _product.Tax;
-        var finalPrice = _product.FinalPrice;
-        
+        var actualTaxAmount = _product.Tax;
+        var actualFinalPrice = _product.FinalPrice;
+    
         // Assert
-        Assert.Equal(20.25,_product.Price);
-        Assert.Equal(4.25,taxAmount);
-        Assert.Equal(24.50,finalPrice);
+        Assert.Equal(price,_product.Price);
+        Assert.Equal(taxAmount,actualTaxAmount);
+        Assert.Equal(finalPrice,actualFinalPrice);
     }
 }
