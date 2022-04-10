@@ -2,18 +2,32 @@ namespace PriceCalculatorKata;
 
 public class SpecialDiscounts
 {
+    private Dictionary<int, Discount> _specialDiscount;
+
+    public SpecialDiscounts()
+    {
+        _specialDiscount = new Dictionary<int, Discount>();
+    }
+
     public void Add(int upc, Discount discount)
     {
-        throw new NotImplementedException();
+        if (_specialDiscount.ContainsKey(upc))
+        {
+            _specialDiscount[upc] = discount;
+        }
+        else
+        {
+            _specialDiscount.Add(upc,discount);
+        }
     }
 
     public int Count()
     {
-        throw new NotImplementedException();
+       return _specialDiscount.Count;
     }
 
     public bool Contains(int upc)
     {
-        throw new NotImplementedException();
+        return _specialDiscount.ContainsKey(upc);
     }
 }

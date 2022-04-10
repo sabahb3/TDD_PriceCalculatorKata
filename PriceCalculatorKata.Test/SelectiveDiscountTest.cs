@@ -22,11 +22,11 @@ public class SelectiveDiscountTest
         // Act
         _specialDiscount.Add(upc, discount);
         var specialDiscountsCount = _specialDiscount.Count();
-        var ContainsUpc = _specialDiscount.Contains(upc);
+        var containsUpc = _specialDiscount.Contains(upc);
         
         // Assert
         Assert.Equal(1,specialDiscountsCount);
-        Assert.Equal(true,ContainsUpc);
+        Assert.True(containsUpc);
     }
     
 }
