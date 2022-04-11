@@ -53,4 +53,6 @@ public class Product: IProduct
             return _calculations.CalculateTotalDiscount(Price,UPC);
         }
     }
+
+    public List<IExpenses> Expenses => _expenses;
 }
