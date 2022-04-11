@@ -98,7 +98,7 @@ public class CalculationsTest
         // Act
         var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345);
         var tax = _calculations.CalculateTax(20.25,12345);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>());
         
         // Assert
         Assert.Equal(4.24,totalDiscount);
@@ -120,13 +120,15 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         
         // Act
-        var expensesCost = _calculations.CaluculateExpensis(expenses, 20.25);
+        var expensesCost = _calculations.CalculateExpenses(expenses, 20.25);
         var tax = _calculations.CalculateTax(20.25, 12345);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345);
+        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses);
         
         // Assert
-        Assert.Equal(2.22,expensesCost);
+        Assert.Equal(2.4,expensesCost);
         Assert.Equal(4.25,tax);
+        Assert.Equal(4.46,discounts);
         Assert.Equal(22.44,finalPrice);
     }
 
@@ -135,13 +137,13 @@ public class CalculationsTest
         List <IExpenses > expenses= new List<IExpenses>();
         Mock<IExpenses> packagingExpense = new Mock<IExpenses>();
         packagingExpense.Setup(e => e.Description).Returns("Packaging");
-        packagingExpense.Setup(e => e.Amount).Returns(1);
+        packagingExpense.Setup(e => e.Amount).Returns(0.01);
         packagingExpense.Setup(e => e.Type).Returns(PriceType.Percentage);
         
         Mock<IExpenses> transportExpense = new Mock<IExpenses>();
-        packagingExpense.Setup(e => e.Description).Returns("Transport");
-        packagingExpense.Setup(e => e.Amount).Returns(2.2);
-        packagingExpense.Setup(e => e.Type).Returns(PriceType.Absolute);
+        transportExpense.Setup(e => e.Description).Returns("Transport");
+        transportExpense.Setup(e => e.Amount).Returns(2.2);
+        transportExpense.Setup(e => e.Type).Returns(PriceType.Absolute);
         
         expenses.Add(packagingExpense.Object);
         expenses.Add(transportExpense.Object);
