@@ -35,7 +35,7 @@ public class Product: IProduct
     {
         get
         {
-            return _calculations.CalculateTax(Price);
+            return _calculations.CalculateTax(Price,UPC);
         }
     }
 
