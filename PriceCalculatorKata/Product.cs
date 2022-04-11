@@ -8,12 +8,14 @@ public class Product: IProduct
 
     private Calculations _calculations;
     private double _price;
-    public Product(int upc, string name, double price, Calculations calculations)
+    private List<IExpenses> _expenses;
+    public Product(int upc, string name, double price, Calculations calculations,List<IExpenses> expenses)
     {
         UPC = upc;
         Name = name ?? String.Empty;
         Price = price;
         _calculations = calculations;
+        _expenses = expenses;
     }
 
     public double Price
@@ -41,7 +43,7 @@ public class Product: IProduct
 
     public double FinalPrice
     {
-        get { return _calculations.CalculateFinalPrice(Price,UPC); }
+        get { return _calculations.CalculateFinalPrice(Price,UPC,_expenses); }
     }
 
     public double Discount
