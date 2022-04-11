@@ -16,22 +16,22 @@ public class Calculations
         _upcDiscount = upcDiscount;
     }
 
-    public double CalculateFinalPrice(double price, int upc)
+    public virtual double CalculateFinalPrice(double price, int upc)
     {
         return price + CalculateTax(price) - CalculateTotalDiscount(price, upc);
     }
-    public double CalculateTax(double price)
+    public virtual double CalculateTax(double price)
     {
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * taxRatio).FormattedNumber;
     }
 
-    public double CalculateTotalDiscount(double price, int upc)
+    public virtual double CalculateTotalDiscount(double price, int upc)
     {
         return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
     }
     
-    public double CalculateUPCDiscount(double price, int upc)
+    public virtual double CalculateUPCDiscount(double price, int upc)
     {
         double upcDiscount=0d;
         if (_upcDiscount.Contains(upc, out var discount))
@@ -43,7 +43,7 @@ public class Calculations
         return upcDiscount;
     }
     
-    public double CalculateUniversalDiscount(double price)
+    public virtual double CalculateUniversalDiscount(double price)
     {
         var universalDiscountRatio = new FormattedDouble(_universalDiscount.DiscountValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * universalDiscountRatio).FormattedNumber;
