@@ -66,6 +66,7 @@ public class ReportTest
         _product.Setup(p => p.Discount).Returns(4.46);
         _product.Setup(p => p.FinalPrice).Returns(22.44);
         _product.Setup(x => x.UPC).Returns(12345);
+        _product.Setup(p => p.Expenses).Returns(CalculationsTest.InitializingExpenses());
         var upcDiscount = new Discount();
         upcDiscount.SetDiscount("7");
         _upcDiscount.Setup(d => d.Contains(12345, out upcDiscount)).Returns(true);
