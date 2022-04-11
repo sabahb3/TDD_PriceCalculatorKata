@@ -6,9 +6,11 @@ namespace PriceCalculatorKata;
 public class Report
 {
     private IProduct _product;
-    public Report(IProduct product)
+    private ISpecialDiscount _upcDiscounts;
+    public Report(IProduct product, ISpecialDiscount upcDiscounts)
     {
         _product = product;
+        _upcDiscounts = upcDiscounts;
     }
 
     public string DisplayProductReport()
@@ -19,7 +21,12 @@ public class Report
         string message=$"price ${finalPrice} \n";
         if(_product.Discount==noDiscount)
             return message;
-        message += $"${discount} amount which was deduced";
+        if (_upcDiscounts.Contains(_product.UPC, out var upcDiscount))
+        {
+            message += $"total discount amount ${discount}";
+            return message;
+        }
+        message += $"discount amount ${discount}";
         return message;
     }
 }

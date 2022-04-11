@@ -6,15 +6,20 @@ namespace PriceCalculatorKata.Test;
 
 public class ProductTest
 {
-    private Mock<ITax> _tax;
     private Product _product;
-    private Mock<IDiscount> _UniversalDiscount;
+    private Mock<Calculations> _calculations;
+    private Mock<ITax> _tax;
+    private Mock<IDiscount> _universalDiscount;
+    private Mock<ISpecialDiscount> _upcDiscount;
+
 
     public ProductTest()
     {
         _tax = new Mock<ITax>();
-        _UniversalDiscount = new Mock<IDiscount>();
-        _product = new Product(12345,"The Little Prince",20.25,_tax.Object,_UniversalDiscount.Object);
+        _universalDiscount = new Mock<IDiscount>();
+        _upcDiscount = new Mock<ISpecialDiscount>();
+        _calculations = new Mock<Calculations>(_tax.Object,_universalDiscount.Object,_upcDiscount.Object);
+        _product = new Product(12345,"The Little Prince",20.25,_calculations.Object);
     }
 
     [Theory]
@@ -23,7 +28,8 @@ public class ProductTest
     public void ShouldCalculateTaxAmountBasedOnProductPrice(int  tax, double price,double taxAmount,double finalPrice)
     {
         // Arrange
-        _tax.Setup(x => x.TaxValue).Returns(tax);
+        _calculations.Setup(x => x.CalculateTax(price)).Returns(taxAmount);
+        _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC)).Returns(finalPrice);
 
         // Act
         var actualTaxAmount = _product.Tax;
@@ -39,11 +45,10 @@ public class ProductTest
     public void ShouldTakeDiscountInAccountWhileCalculatingFinalPrice()
     {
         // Arrange
-        var value = Tax.GetTax();
+        _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345)).Returns(21.26);
+        _calculations.Setup(t => t.CalculateTax(_product.Price)).Returns(4.05);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC)).Returns(3.04);
         
-        _tax.Setup(x => x.TaxValue).Returns(20);
-        _UniversalDiscount.Setup(d => d.DiscountValue).Returns(15);
-    
         // Act
         var taxAmount = _product.Tax;
         var discountAmount = _product.Discount;
@@ -57,9 +62,26 @@ public class ProductTest
     
     }
 
+    [Theory]
+    [InlineData(20, 15, 7, 12345,4.46,19.84, "price $19.84 \ntotal discount amount $4.46")]
+    [InlineData(21, 15, 7, 789, 3.04,21.46, "price $21.46 \ndiscount amount $3.04")]
+    public void ShouldTakeUpcDiscountInAccountWhileCalculatingFinalPrice(int tax, int universalDiscount,
+        int upcDiscount, int upcNumber,double totalDiscount,double finalPrice, string message)
+    {
+        // Arrange
+        _calculations.Setup(c => c.CalculateFinalPrice(_product.Price,_product.UPC)).Returns(finalPrice);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC)).Returns(totalDiscount);
 
-    
-    
-    
+        // Act
+        var actualFinalPrice = _product.FinalPrice;
+        var discountAmount = _product.Discount;
+        
+        // Assert
+        Assert.Equal(totalDiscount,discountAmount);
+        Assert.Equal(finalPrice,actualFinalPrice);
+    }
+
+
+
 
 }
