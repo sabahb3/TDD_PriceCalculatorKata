@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Moq;
 using PriceCalculatorKata.Interfaces;
 using PriceCalculatorKata.Enumerations;
@@ -105,5 +106,45 @@ public class CalculationsTest
         Assert.Equal(19.78,finalPrice);
 
 
+    }
+
+    [Fact]
+    public void ShouldAddExpenseCostToFinalPrice()
+    {
+        // Arrange
+        var expenses = InitializingExpenses();
+        _tax.Setup(t => t.TaxValue).Returns(21);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        
+        // Act
+        var expensesCost = _calculations.CaluculateExpensis(expenses, 20.25);
+        var tax = _calculations.CalculateTax(20.25, 12345);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345);
+        
+        // Assert
+        Assert.Equal(2.22,expensesCost);
+        Assert.Equal(4.25,tax);
+        Assert.Equal(22.44,finalPrice);
+    }
+
+    private List<IExpenses> InitializingExpenses()
+    {
+        List <IExpenses > expenses= new List<IExpenses>();
+        Mock<IExpenses> packagingExpense = new Mock<IExpenses>();
+        packagingExpense.Setup(e => e.Description).Returns("Packaging");
+        packagingExpense.Setup(e => e.Amount).Returns(1);
+        packagingExpense.Setup(e => e.PriceType).Returns(PriceType.Percentage);
+        
+        Mock<IExpenses> transportExpense = new Mock<IExpenses>();
+        packagingExpense.Setup(e => e.Description).Returns("Transport");
+        packagingExpense.Setup(e => e.Amount).Returns(2.2);
+        packagingExpense.Setup(e => e.PriceType).Returns(PriceType.Absolute);
+        
+        expenses.Add(packagingExpense.Object);
+        expenses.Add(transportExpense.Object);
+        return expenses;
     }
 }

@@ -118,5 +118,9 @@ public class Calculations
         var universalDiscountRatio = new FormattedDouble(_universalDiscount.DiscountValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * universalDiscountRatio).FormattedNumber;
     }
-    
+
+    public double CaluculateExpensis(List<IExpenses> expenses, double d)
+    {
+        throw new NotImplementedException();
+    }
 }
