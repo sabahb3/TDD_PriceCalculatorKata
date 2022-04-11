@@ -132,7 +132,7 @@ public class CalculationsTest
         Assert.Equal(22.44,finalPrice);
     }
 
-    private List<IExpenses> InitializingExpenses()
+    public static List<IExpenses> InitializingExpenses()
     {
         List <IExpenses > expenses= new List<IExpenses>();
         Mock<IExpenses> packagingExpense = new Mock<IExpenses>();
