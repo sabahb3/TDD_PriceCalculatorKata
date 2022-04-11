@@ -17,9 +17,10 @@ public class Calculations
         _upcDiscount = upcDiscount;
     }
 
-    public virtual double CalculateFinalPrice(double price, int upc)
+    public virtual double CalculateFinalPrice(double price, int upc,List<IExpenses> expenses)
     {
-        return price + CalculateTax(price,upc) - CalculateTotalDiscount(price, upc);
+        return new FormattedDouble(
+            price + CalculateTax(price,upc) - CalculateTotalDiscount(price, upc)+CalculateExpenses(expenses,price)).FormattedNumber;
     }
     public virtual double CalculateTax(double price, int upc)
     {
@@ -119,8 +120,12 @@ public class Calculations
         return new FormattedDouble(price * universalDiscountRatio).FormattedNumber;
     }
 
-    public double CaluculateExpensis(List<IExpenses> expenses, double d)
+    public double CalculateExpenses(List<IExpenses> expenses, double price)
     {
-        throw new NotImplementedException();
+        var expenseCost = expenses.Where(e => e.Type == PriceType.Percentage)
+            .Select(e => new FormattedDouble(price * e.Amount).FormattedNumber).Sum();
+        expenseCost += expenses.Where(e => e.Type == PriceType.Absolute)
+            .Select(e => new FormattedDouble(e.Amount).FormattedNumber).Sum();
+        return new FormattedDouble(expenseCost).FormattedNumber;
     }
 }
