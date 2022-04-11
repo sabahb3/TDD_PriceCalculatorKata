@@ -136,12 +136,12 @@ public class CalculationsTest
         Mock<IExpenses> packagingExpense = new Mock<IExpenses>();
         packagingExpense.Setup(e => e.Description).Returns("Packaging");
         packagingExpense.Setup(e => e.Amount).Returns(1);
-        packagingExpense.Setup(e => e.PriceType).Returns(PriceType.Percentage);
+        packagingExpense.Setup(e => e.Type).Returns(PriceType.Percentage);
         
         Mock<IExpenses> transportExpense = new Mock<IExpenses>();
         packagingExpense.Setup(e => e.Description).Returns("Transport");
         packagingExpense.Setup(e => e.Amount).Returns(2.2);
-        packagingExpense.Setup(e => e.PriceType).Returns(PriceType.Absolute);
+        packagingExpense.Setup(e => e.Type).Returns(PriceType.Absolute);
         
         expenses.Add(packagingExpense.Object);
         expenses.Add(transportExpense.Object);
