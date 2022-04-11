@@ -1,5 +1,7 @@
 using Moq;
 using PriceCalculatorKata.Interfaces;
+using PriceCalculatorKata.Enumerations;
+
 using Xunit;
 
 namespace PriceCalculatorKata.Test;
@@ -78,5 +80,32 @@ public class CalculationsTest
         
         // Assert
         Assert.Equal(discount,actualDiscount);
+    }
+
+    [Fact]
+    public void ShouldLookAtPrecedenceWhileCalculatingTax()
+    {
+        // Arrange
+        _tax.Setup(t => t.TaxValue).Returns(20);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        _universalDiscount.Setup(d => d.Precedence).Returns(DiscountPrecedence.AfterTax);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        upcD.Precedence = DiscountPrecedence.BeforeTax;
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        
+        // Act
+        var upcDiscount = _calculations.CalculateUPCDiscount(20.25, 12345);
+        var universalDiscount = _calculations.CalculateUniversalDiscount(20.25);
+        var tax = _calculations.CalculateTax(20.25);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345);
+        
+        // Assert
+        Assert.Equal(1.42,upcDiscount);
+        Assert.Equal(2.82,universalDiscount);
+        Assert.Equal(3.77,tax);
+        Assert.Equal(19.78,finalPrice);
+
+
     }
 }
