@@ -33,13 +33,16 @@ public class SpecialDiscounts: ISpecialDiscount
        return _specialDiscountContainer.Count;
     }
 
-    public bool Contains(int upc)
+    public bool Contains(int upc,out Discount? discountValue)
     {
+        
+        discountValue=_specialDiscountContainer.ContainsKey(upc)?_specialDiscountContainer[upc]:null;
         return _specialDiscountContainer.ContainsKey(upc);
     }
 
     public void Remove(int upc)
     {
-        if (Contains(upc)) _specialDiscountContainer.Remove(upc);
+        if (Contains(upc,out var discount)) _specialDiscountContainer.Remove(upc);
     }
+    
 }

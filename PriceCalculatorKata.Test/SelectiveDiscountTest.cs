@@ -21,7 +21,7 @@ public class SelectiveDiscountTest
         // Act
         _specialDiscount.Add(upc, discount);
         var specialDiscountsCount = _specialDiscount.Count();
-        var containsUpc = _specialDiscount.Contains(upc);
+        var containsUpc = _specialDiscount.Contains(upc,out var upcDiscount);
         
         // Assert
         Assert.Equal(1,specialDiscountsCount);
