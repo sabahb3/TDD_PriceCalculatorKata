@@ -15,7 +15,8 @@ public class ProductTest
     {
         _tax = new Mock<ITax>();
         _UniversalDiscount = new Mock<IDiscount>();
-        _product = new Product(12345,"The Little Prince",20.25,_tax.Object,_UniversalDiscount.Object);
+        _UpcDiscounts = new Mock<ISpecialDiscount>();
+        _product = new Product(12345,"The Little Prince",20.25,_tax.Object,_UniversalDiscount.Object,_UpcDiscounts.Object);
     }
 
     [Theory]
@@ -69,8 +70,8 @@ public class ProductTest
         _UniversalDiscount.Setup(ud => ud.DiscountValue).Returns(universalDiscount);
         var upcD = new Discount();
         upcD.SetDiscount(upcDiscount.ToString());
-        _UpcDiscounts.Setup(d => d.Add(upcNumber, upcD));
-        
+        _UpcDiscounts.Setup(d=>d.Contains(upcNumber, out upcD)).Returns(true);
+
         // Act
         var actualFinalPrice = _product.FinalPrice;
         var discountAmount = _product.Discount;
