@@ -28,7 +28,7 @@ public class CalculationsTest
         _tax.Setup(t => t.TaxValue).Returns(20);
         
         // Act
-        var tax = _calculations.CalculateTax(20.25);
+        var tax = _calculations.CalculateTax(20.25,12345);
         
         // Assert
         Assert.Equal(4.05,tax);
@@ -95,14 +95,12 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         
         // Act
-        var upcDiscount = _calculations.CalculateUPCDiscount(20.25, 12345);
-        var universalDiscount = _calculations.CalculateUniversalDiscount(20.25);
-        var tax = _calculations.CalculateTax(20.25);
+        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345);
+        var tax = _calculations.CalculateTax(20.25,12345);
         var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345);
         
         // Assert
-        Assert.Equal(1.42,upcDiscount);
-        Assert.Equal(2.82,universalDiscount);
+        Assert.Equal(4.24,totalDiscount);
         Assert.Equal(3.77,tax);
         Assert.Equal(19.78,finalPrice);
 

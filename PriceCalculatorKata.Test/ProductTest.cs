@@ -28,7 +28,7 @@ public class ProductTest
     public void ShouldCalculateTaxAmountBasedOnProductPrice(int  tax, double price,double taxAmount,double finalPrice)
     {
         // Arrange
-        _calculations.Setup(x => x.CalculateTax(price)).Returns(taxAmount);
+        _calculations.Setup(x => x.CalculateTax(price,_product.UPC)).Returns(taxAmount);
         _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC)).Returns(finalPrice);
 
         // Act
@@ -46,7 +46,7 @@ public class ProductTest
     {
         // Arrange
         _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345)).Returns(21.26);
-        _calculations.Setup(t => t.CalculateTax(_product.Price)).Returns(4.05);
+        _calculations.Setup(t => t.CalculateTax(_product.Price,_product.UPC)).Returns(4.05);
         _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC)).Returns(3.04);
         
         // Act
