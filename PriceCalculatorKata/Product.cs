@@ -5,18 +5,15 @@ namespace PriceCalculatorKata;
 
 public class Product: IProduct
 {
-    private ITax _tax;
-    private IDiscount _universalDiscount;
-    private ISpecialDiscount _upcDiscount;
+
+    private Calculations _calculations;
     private double _price;
-    public Product(int upc, string name, double price, ITax tax,IDiscount universalDiscount, ISpecialDiscount upcDiscount)
+    public Product(int upc, string name, double price, Calculations calculations)
     {
         UPC = upc;
         Name = name ?? String.Empty;
         Price = price;
-        _tax = tax;
-        _universalDiscount = universalDiscount;
-        _upcDiscount = upcDiscount;
+        _calculations = calculations;
     }
 
     public double Price
@@ -38,29 +35,20 @@ public class Product: IProduct
     {
         get
         {
-            var tax = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
-            return new FormattedDouble(Price * tax).FormattedNumber;
+            return _calculations.CalculateTax(Price);
         }
     }
 
     public double FinalPrice
     {
-        get { return new FormattedDouble(Price + Tax - Discount).FormattedNumber; }
+        get { return _calculations.CalculateFinalPrice(Price,UPC); }
     }
 
     public double Discount
     {
         get
         {
-            var upcDiscount = 0d;
-            if (_upcDiscount.Contains(UPC,out var specialDiscount))
-            {
-                var upcDiscountRatio = new FormattedDouble(specialDiscount!.DiscountValue / 100.0).FormattedNumber;
-                upcDiscount = new FormattedDouble(Price * upcDiscountRatio).FormattedNumber;
-            }
-            var universalDiscountRatio = new FormattedDouble(_universalDiscount.DiscountValue / 100.0).FormattedNumber;
-            var universalDiscount= new FormattedDouble(Price * universalDiscountRatio).FormattedNumber;
-            return upcDiscount + universalDiscount;
+            return _calculations.CalculateTotalDiscount(Price,UPC);
         }
     }
 }
