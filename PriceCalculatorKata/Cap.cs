@@ -31,7 +31,7 @@ public class Cap : ICap
         }
         else
         {
-            return price * Amount;
+            return new FormattedDouble(price * Amount).FormattedNumber;
         }
     }
     
