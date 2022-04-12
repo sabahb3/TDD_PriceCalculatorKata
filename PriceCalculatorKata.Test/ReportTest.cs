@@ -19,9 +19,9 @@ public class ReportTest
     }
     
     [Theory]
-    [InlineData(20,3.04,21.26,"price $21.26 \ndiscount amount $3.04")]
-    [InlineData(0,0,24.30,"price $24.30 \n")]
-    public void ShouldReportTheProduct(int universalDiscount,double discountAmount,double finalPrice, string message)
+    [InlineData(3.04,21.26,"Cost = $20.25\n Tax = $0.00\n Discounts = $3.04\n TOTAL = $21.26\n $3.04 discount")]
+    [InlineData(0,24.30,"Cost = $20.25\n Tax = $0.00\n TOTAL = $24.30\n no discounts")]
+    public void ShouldReportTheProduct(double discountAmount,double finalPrice, string message)
     {
         // Arrange
         _product.Setup(p => p.Price).Returns(20.25);
@@ -36,8 +36,8 @@ public class ReportTest
     }
     
     [Theory]
-    [InlineData(4.05,4.46,19.84,"price $19.84 \ntotal discount amount $4.46",12345,"7")]
-    [InlineData(4.25,3.04,21.46,"price $21.46 \ndiscount amount $3.04",789,"7")]
+    [InlineData(4.05,4.46,19.84,"Cost = $20.25\n Tax = $4.05\n Discounts = $4.46\n TOTAL = $19.84\n $4.46 total discount",12345,"7")]
+    [InlineData(4.25,3.04,21.46,"Cost = $20.25\n Tax = $4.25\n Discounts = $3.04\n TOTAL = $21.46\n $3.04 discount",789,"7")]
     public void ShouldReportTheProductWithUPCDiscount(double taxAmount,double discountAmount,double finalPrice, string message,int upc, string discount )
     {
         // Arrange
@@ -56,7 +56,48 @@ public class ReportTest
         // Assert
         Assert.Equal(message,actualMessage);
     }
-    
+
+    [Fact]
+    public void ShouldReportingProductWithExpenses()
+    {
+        // Arrange
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.Tax).Returns(4.25);
+        _product.Setup(p => p.Discount).Returns(4.46);
+        _product.Setup(p => p.FinalPrice).Returns(22.44);
+        _product.Setup(x => x.UPC).Returns(12345);
+        _product.Setup(p => p.Expenses).Returns(CalculationsTest.InitializingExpenses());
+        var upcDiscount = new Discount();
+        upcDiscount.SetDiscount("7");
+        _upcDiscount.Setup(d => d.Contains(12345, out upcDiscount)).Returns(true);
+
+        // Act
+        var actualMessage = _report.DisplayProductReport();
+
+        var message =
+            "Cost = $20.25\n Tax = $4.25\n Discounts = $4.46\n Packaging = $0.20\n Transport = $2.20\n TOTAL = $22.44\n $4.46 total discount";
+
+        // Assert
+        Assert.Equal(message,actualMessage);
+    }
+
+    [Fact]
+    public void ShouldReportProductWithNoDiscountAndAdditionalCost()
+    {
+        // Arrange
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.Tax).Returns(4.25);
+        _product.Setup(p => p.FinalPrice).Returns(24.50);
+
+        // Act
+        var actualMessage = _report.DisplayProductReport();
+
+        var message =
+            "Cost = $20.25\n Tax = $4.25\n TOTAL = $24.50\n no discounts";
+
+        // Assert
+        Assert.Equal(message,actualMessage);
+    }
     
     
 }

@@ -8,5 +8,6 @@ public interface IProduct
     public double Tax { get; }
     public double FinalPrice { get; }
     public double Discount { get; }
+    public List<IExpenses> Expenses { get; }
 
 }
