@@ -12,6 +12,7 @@ public class CalculationsTest
     private Mock<ITax> _tax;
     private Mock<IDiscount> _universalDiscount;
     private Mock<ISpecialDiscount> _upcDiscount;
+    private Mock<ICap> _cap;
     private Calculations _calculations;
 
     public CalculationsTest()
@@ -19,6 +20,7 @@ public class CalculationsTest
         _tax = new Mock<ITax>();
         _universalDiscount = new Mock<IDiscount>();
         _upcDiscount = new Mock<ISpecialDiscount>();
+        _cap = new Mock<ICap>();
         _calculations = new Calculations(_tax.Object,_universalDiscount.Object,_upcDiscount.Object);
     }
 
@@ -154,6 +156,29 @@ public class CalculationsTest
         Assert.Equal(discounts,actualDiscounts);
         Assert.Equal(finalPrice,actualFinalPrice);
 
+    }
+
+    [Fact]
+    public void ShouldUseCapWhileCalculatingDiscount()
+    {
+        // Arrange
+        _tax.Setup(t => t.TaxValue).Returns(21);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        var expenses = InitializingExpenses();
+        _cap.Setup(c => c.Type).Returns(PriceType.Absolute);
+        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(4);
+        
+        // Act
+        var discount = _calculations.CalculateTotalDiscount(20.25, 12345, CombinedDiscount.Additive);
+        var finalPrice =
+            _calculations.CalculateFinalPrice(20.25, 12345, InitializingExpenses(), CombinedDiscount.Additive);
+        
+        // Assert
+        Assert.Equal(4,discount);
+        Assert.Equal(20.50,finalPrice);
     }
     public static List<IExpenses> InitializingExpenses()
     {
