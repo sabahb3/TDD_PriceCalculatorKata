@@ -14,7 +14,7 @@ public class ReportTest
     public ReportTest()
     {
         _product = new Mock<IProduct>();
-        _product.Setup(p => p.CurrencyCode.CurrencyCode).Returns("USD");
+        _product.Setup(p => p.CurrencyCode).Returns("USD");
         _upcDiscount = new Mock<ISpecialDiscount>();
         _report = new Report(_product.Object,_upcDiscount.Object);
     }
@@ -106,7 +106,7 @@ public class ReportTest
         _product.Setup(p => p.Price).Returns(20.25);
         _product.Setup(p => p.Tax).Returns(4.25);
         _product.Setup(p => p.FinalPrice).Returns(24.50);
-        _product.Setup(p => p.CurrencyCode.CurrencyCode).Returns("USD");
+        _product.Setup(p => p.CurrencyCode).Returns("USD");
 
         // Act
         var actualMessage = _report.DisplayProductReport();
