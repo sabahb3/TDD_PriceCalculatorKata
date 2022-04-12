@@ -12,6 +12,7 @@ public class CalculationsTest
     private Mock<ITax> _tax;
     private Mock<IDiscount> _universalDiscount;
     private Mock<ISpecialDiscount> _upcDiscount;
+    private Mock<ICap> _cap;
     private Calculations _calculations;
 
     public CalculationsTest()
@@ -19,7 +20,9 @@ public class CalculationsTest
         _tax = new Mock<ITax>();
         _universalDiscount = new Mock<IDiscount>();
         _upcDiscount = new Mock<ISpecialDiscount>();
-        _calculations = new Calculations(_tax.Object,_universalDiscount.Object,_upcDiscount.Object);
+        _cap = new Mock<ICap>();
+        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(20.25);
+        _calculations = new Calculations(_tax.Object,_universalDiscount.Object,_upcDiscount.Object,_cap.Object);
     }
 
     [Fact]
@@ -29,7 +32,7 @@ public class CalculationsTest
         _tax.Setup(t => t.TaxValue).Returns(20);
         
         // Act
-        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
+        var tax = _calculations.CalculateTax(20.25,12345,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(4.05,tax);
@@ -77,7 +80,7 @@ public class CalculationsTest
         _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
 
         // Act
-        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(discount,actualDiscount);
@@ -96,9 +99,9 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         
         // Act
-        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
-        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),CombinedDiscount.Additive);
+        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var tax = _calculations.CalculateTax(20.25,12345,_calculations.CombinedDiscount);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(4.24,totalDiscount);
@@ -121,9 +124,9 @@ public class CalculationsTest
         
         // Act
         var expensesCost = _calculations.CalculateExpenses(expenses, 20.25);
-        var tax = _calculations.CalculateTax(20.25, 12345,CombinedDiscount.Additive);
-        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,CombinedDiscount.Additive);
+        var tax = _calculations.CalculateTax(20.25, 12345,_calculations.CombinedDiscount);
+        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(2.4,expensesCost);
@@ -144,16 +147,43 @@ public class CalculationsTest
         upcD.SetDiscount("7");
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         var expenses = InitializingExpenses();
+        _calculations.CombinedDiscount = combining;
 
         // Act
-        var tax = _calculations.CalculateTax(20.25, 12345,combining);
-        var actualDiscounts = _calculations.CalculateTotalDiscount(20.25, 12345,combining);
-        var actualFinalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,combining);
+        var tax = _calculations.CalculateTax(20.25, 12345,_calculations.CombinedDiscount);
+        var actualDiscounts = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var actualFinalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
 
         // Assert
         Assert.Equal(discounts,actualDiscounts);
         Assert.Equal(finalPrice,actualFinalPrice);
 
+    }
+
+    [Theory]
+    [InlineData(4.05,20.45,4.05)]
+    [InlineData(4,20.50,4)]
+    [InlineData(4.46,20.04,6.08)]
+    public void ShouldUseCapWhileCalculatingDiscount(double discount,double finalPrice,double capAmount)
+    {
+        // Arrange
+        _tax.Setup(t => t.TaxValue).Returns(21);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        var expenses = InitializingExpenses();
+        _cap.Setup(c => c.Type).Returns(PriceType.Absolute);
+        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(capAmount);
+        
+        // Act
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345, _calculations.CombinedDiscount);
+        var actualFinalPrice =
+            _calculations.CalculateFinalPrice(20.25, 12345, new List<IExpenses>(), _calculations.CombinedDiscount);
+        
+        // Assert
+        Assert.Equal(discount,actualDiscount);
+        Assert.Equal(finalPrice,actualFinalPrice);
     }
     public static List<IExpenses> InitializingExpenses()
     {
