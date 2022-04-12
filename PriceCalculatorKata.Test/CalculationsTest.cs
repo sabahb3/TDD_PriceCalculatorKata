@@ -134,7 +134,7 @@ public class CalculationsTest
 
     [Theory]
     [InlineData(4.46,22.44,CombinedDiscount.Additive)]
-    [InlineData(4.24,22.65,CombinedDiscount.Multiplicative)]
+    [InlineData(4.24,22.66,CombinedDiscount.Multiplicative)]
     public void ShouldTakeIntoAccountDiscountsCombinationWay(double discounts, double finalPrice, CombinedDiscount combining)
     {
         // Arrange
