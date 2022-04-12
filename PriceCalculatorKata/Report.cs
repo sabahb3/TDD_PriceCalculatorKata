@@ -23,7 +23,7 @@ public class Report
         var tax = _product.Tax.ToString("#0.00",CultureInfo.InvariantCulture);
         string message=$"Cost = ${_product.Price}\n ";
         message += $"Tax = ${tax}\n ";
-        message += $"Discounts = ${discount}\n ";
+        if(_product.Discount!=0) message += $"Discounts = ${discount}\n ";
         message += ReportingExpenses();
         message += $"TOTAL = ${finalPrice}\n ";
         if (_product.Discount == noDiscount)

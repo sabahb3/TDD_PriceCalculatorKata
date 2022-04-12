@@ -20,7 +20,7 @@ public class ReportTest
     
     [Theory]
     [InlineData(3.04,21.26,"Cost = $20.25\n Tax = $0.00\n Discounts = $3.04\n TOTAL = $21.26\n $3.04 discount")]
-    [InlineData(0,24.30,"Cost = $20.25\n Tax = $0.00\n Discounts = $0.00\n TOTAL = $24.30\n no discounts")]
+    [InlineData(0,24.30,"Cost = $20.25\n Tax = $0.00\n TOTAL = $24.30\n no discounts")]
     public void ShouldReportTheProduct(double discountAmount,double finalPrice, string message)
     {
         // Arrange
