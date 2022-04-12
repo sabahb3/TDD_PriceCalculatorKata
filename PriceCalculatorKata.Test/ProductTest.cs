@@ -13,6 +13,7 @@ public class ProductTest
     private Mock<ITax> _tax;
     private Mock<IDiscount> _universalDiscount;
     private Mock<ISpecialDiscount> _upcDiscount;
+    private Mock<ICap> _cap;
 
 
     public ProductTest()
@@ -20,7 +21,9 @@ public class ProductTest
         _tax = new Mock<ITax>();
         _universalDiscount = new Mock<IDiscount>();
         _upcDiscount = new Mock<ISpecialDiscount>();
-        _calculations = new Mock<Calculations>(_tax.Object,_universalDiscount.Object,_upcDiscount.Object);
+        _cap = new Mock<ICap>();
+        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(20.25);
+        _calculations = new Mock<Calculations>(_tax.Object,_universalDiscount.Object,_upcDiscount.Object,_cap.Object);
         _product = new Product(12345,"The Little Prince",20.25,_calculations.Object,new List<IExpenses>());
     }
 
