@@ -48,11 +48,11 @@ public class CalculationsTest
         var discount = _calculations.CalculateUniversalDiscount(20.25);
         
         // Assert
-        Assert.Equal(3.04,discount);
+        Assert.Equal(3.0375,discount);
     }
 
     [Theory]
-    [InlineData(12345,1.42)]
+    [InlineData(12345,1.4175)]
     [InlineData(789,0)]
     public void ShouldCalculateUPCDiscount(int upc, double discount)
     {
@@ -69,8 +69,8 @@ public class CalculationsTest
     }
     
     [Theory]
-    [InlineData(12345,4.46)]
-    [InlineData(789,3.04)]
+    [InlineData(12345,4.455)]
+    [InlineData(789,3.0375)]
     public void ShouldCalculateTotalDiscount(int upc, double discount)
     {
         // Arrange
@@ -104,9 +104,9 @@ public class CalculationsTest
         var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_calculations.CombinedDiscount);
         
         // Assert
-        Assert.Equal(4.24,totalDiscount);
-        Assert.Equal(3.77,tax);
-        Assert.Equal(19.78,finalPrice);
+        Assert.Equal(4.2424,totalDiscount);
+        Assert.Equal(3.7665,tax);
+        Assert.Equal(19.7741,finalPrice);
 
 
     }
@@ -129,15 +129,15 @@ public class CalculationsTest
         var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
         
         // Assert
-        Assert.Equal(2.4,expensesCost);
-        Assert.Equal(4.25,tax);
-        Assert.Equal(4.46,discounts);
-        Assert.Equal(22.44,finalPrice);
+        Assert.Equal(2.4025,expensesCost);
+        Assert.Equal(4.2525,tax);
+        Assert.Equal(4.455,discounts);
+        Assert.Equal(22.45,finalPrice);
     }
 
     [Theory]
-    [InlineData(4.46,22.44,CombinedDiscount.Additive)]
-    [InlineData(4.24,22.66,CombinedDiscount.Multiplicative)]
+    [InlineData(4.455,22.45,CombinedDiscount.Additive)]
+    [InlineData(4.2424,22.6626,CombinedDiscount.Multiplicative)]
     public void ShouldTakeIntoAccountDiscountsCombinationWay(double discounts, double finalPrice, CombinedDiscount combining)
     {
         // Arrange
@@ -161,9 +161,9 @@ public class CalculationsTest
     }
 
     [Theory]
-    [InlineData(4.05,20.45,4.05)]
-    [InlineData(4,20.50,4)]
-    [InlineData(4.46,20.04,6.08)]
+    [InlineData(4.05,20.4525,4.05)]
+    [InlineData(4,20.5025,4)]
+    [InlineData(4.455,20.0475,6.08)]
     public void ShouldUseCapWhileCalculatingDiscount(double discount,double finalPrice,double capAmount)
     {
         // Arrange
