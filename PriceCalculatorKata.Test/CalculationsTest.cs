@@ -132,6 +132,30 @@ public class CalculationsTest
         Assert.Equal(22.44,finalPrice);
     }
 
+    [Theory]
+    [InlineData(4.46,22.44,CombinedDiscount.Additive)]
+    [InlineData(4.24,22.65,CombinedDiscount.Multiplicative)]
+    public void ShouldTakeIntoAccountDiscountsCombinationWay(double discounts, double finalPrice, CombinedDiscount combining)
+    {
+        // Arrange
+        _tax.Setup(t => t.TaxValue).Returns(21);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        var expenses = InitializingExpenses();
+        
+        // Act
+        var tax = _calculations.CalculateTax(20.25, 12345,combining);
+        var actualDiscounts = _calculations.CalculateTotalDiscount(20.25, 12345,combining);
+        var actualFinalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,combining);
+        
+        // Assert
+        Assert.Equal(discounts,actualDiscounts);
+        Assert.Equal(finalPrice,actualFinalPrice);
+        
+    }
+
     private List<IExpenses> InitializingExpenses()
     {
         List <IExpenses > expenses= new List<IExpenses>();

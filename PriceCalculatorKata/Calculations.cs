@@ -17,12 +17,13 @@ public class Calculations
         _upcDiscount = upcDiscount;
     }
 
-    public virtual double CalculateFinalPrice(double price, int upc,List<IExpenses> expenses)
+    public virtual double CalculateFinalPrice(double price, int upc, List<IExpenses> expenses,
+        CombinedDiscount combinedDiscount)
     {
         return new FormattedDouble(
-            price + CalculateTax(price,upc) - CalculateTotalDiscount(price, upc)+CalculateExpenses(expenses,price)).FormattedNumber;
+            price + CalculateTax(price,upc,combinedDiscount) - CalculateTotalDiscount(price, upc,combinedDiscount)+CalculateExpenses(expenses,price)).FormattedNumber;
     }
-    public virtual double CalculateTax(double price, int upc)
+    public virtual double CalculateTax(double price, int upc,CombinedDiscount combinedDiscount)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         if (_upcDiscount.Contains(upc, out var discount))
@@ -31,25 +32,25 @@ public class Calculations
         if (upcPrecedence == _universalDiscount.Precedence)
         {
             if (upcPrecedence == DiscountPrecedence.AfterTax)
-                return CalculateTaxBeforeAllDiscount(price);
+                return CalculateTaxBeforeAllDiscount(price,combinedDiscount);
             else
             {
-                return CalculateTaxAfterAllDiscount(price, upc);
+                return CalculateTaxAfterAllDiscount(price, upc,combinedDiscount);
             }
         }
         else
             return CalculateTaxAfterOneDiscount(price,upc);
     }
     
-    public double CalculateTaxBeforeAllDiscount(double price)
+    public double CalculateTaxBeforeAllDiscount(double price,CombinedDiscount combinedDiscount)
     {
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * taxRatio).FormattedNumber;
     }
     
-    private double CalculateTaxAfterAllDiscount(double price, int upc)
+    private double CalculateTaxAfterAllDiscount(double price, int upc,CombinedDiscount combinedDiscount)
     {
-        var discounts = CalculateTotalDiscount(price, upc);
+        var discounts = CalculateTotalDiscount(price, upc,combinedDiscount);
         var remaining = price - discounts;
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
@@ -70,7 +71,7 @@ public class Calculations
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
     }
 
-    public virtual double CalculateTotalDiscount(double price, int upc)
+    public virtual double CalculateTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         Discount discount;
