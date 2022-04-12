@@ -12,7 +12,7 @@ public class CurrencyTests
     public void ShouldReturnCurrencyCode(string input, string output)
     {
         // Arrange
-        Currency currency = new Currency(input);
+        Currency currency = new Currency(input,20.25);
         
         // Act
         var currencyCode = currency.CurrencyCode;
