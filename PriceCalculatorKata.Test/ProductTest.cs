@@ -24,6 +24,7 @@ public class ProductTest
         _cap = new Mock<ICap>();
         _cap.Setup(c => c.GetCapAmount(20.25)).Returns(20.25);
         _calculations = new Mock<Calculations>(_tax.Object,_universalDiscount.Object,_upcDiscount.Object,_cap.Object);
+        _calculations.Setup(c => c.CombinedDiscount).Returns(CombinedDiscount.Additive);
         _product = new Product(12345,"The Little Prince",20.25,_calculations.Object,new List<IExpenses>());
     }
 
@@ -33,8 +34,8 @@ public class ProductTest
     public void ShouldCalculateTaxAmountBasedOnProductPrice(int tax, double price,double taxAmount,double finalPrice)
     {
         // Arrange
-        _calculations.Setup(x => x.CalculateTax(price,_product.UPC,_product.CombinedDiscount)).Returns(taxAmount);
-        _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC,new List<IExpenses>(),_product.CombinedDiscount)).Returns(finalPrice);
+        _calculations.Setup(x => x.CalculateTax(price,_product.UPC,_calculations.Object.CombinedDiscount)).Returns(taxAmount);
+        _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC,new List<IExpenses>(),_calculations.Object.CombinedDiscount)).Returns(finalPrice);
 
         // Act
         var actualTaxAmount = _product.Tax;
@@ -50,9 +51,9 @@ public class ProductTest
     public void ShouldTakeDiscountInAccountWhileCalculatingFinalPrice()
     {
         // Arrange
-        _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_product.CombinedDiscount)).Returns(21.26);
-        _calculations.Setup(t => t.CalculateTax(_product.Price,_product.UPC,_product.CombinedDiscount)).Returns(4.05);
-        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_product.CombinedDiscount)).Returns(3.04);
+        _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_calculations.Object.CombinedDiscount)).Returns(21.26);
+        _calculations.Setup(t => t.CalculateTax(_product.Price,_product.UPC,_calculations.Object.CombinedDiscount)).Returns(4.05);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_calculations.Object.CombinedDiscount)).Returns(3.04);
         
         // Act
         var taxAmount = _product.Tax;
@@ -74,8 +75,8 @@ public class ProductTest
         int upcDiscount, int upcNumber,double totalDiscount,double finalPrice, string message)
     {
         // Arrange
-        _calculations.Setup(c => c.CalculateFinalPrice(_product.Price,_product.UPC,new List<IExpenses>(),_product.CombinedDiscount)).Returns(finalPrice);
-        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_product.CombinedDiscount)).Returns(totalDiscount);
+        _calculations.Setup(c => c.CalculateFinalPrice(_product.Price,_product.UPC,new List<IExpenses>(),_calculations.Object.CombinedDiscount)).Returns(finalPrice);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_calculations.Object.CombinedDiscount)).Returns(totalDiscount);
 
         // Act
         var actualFinalPrice = _product.FinalPrice;

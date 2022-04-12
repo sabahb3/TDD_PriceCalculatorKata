@@ -32,7 +32,7 @@ public class CalculationsTest
         _tax.Setup(t => t.TaxValue).Returns(20);
         
         // Act
-        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
+        var tax = _calculations.CalculateTax(20.25,12345,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(4.05,tax);
@@ -80,7 +80,7 @@ public class CalculationsTest
         _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
 
         // Act
-        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(discount,actualDiscount);
@@ -99,9 +99,9 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         
         // Act
-        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
-        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),CombinedDiscount.Additive);
+        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var tax = _calculations.CalculateTax(20.25,12345,_calculations.CombinedDiscount);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(4.24,totalDiscount);
@@ -124,9 +124,9 @@ public class CalculationsTest
         
         // Act
         var expensesCost = _calculations.CalculateExpenses(expenses, 20.25);
-        var tax = _calculations.CalculateTax(20.25, 12345,CombinedDiscount.Additive);
-        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,CombinedDiscount.Additive);
+        var tax = _calculations.CalculateTax(20.25, 12345,_calculations.CombinedDiscount);
+        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(2.4,expensesCost);
@@ -147,11 +147,12 @@ public class CalculationsTest
         upcD.SetDiscount("7");
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         var expenses = InitializingExpenses();
+        _calculations.CombinedDiscount = combining;
 
         // Act
-        var tax = _calculations.CalculateTax(20.25, 12345,combining);
-        var actualDiscounts = _calculations.CalculateTotalDiscount(20.25, 12345,combining);
-        var actualFinalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,combining);
+        var tax = _calculations.CalculateTax(20.25, 12345,_calculations.CombinedDiscount);
+        var actualDiscounts = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var actualFinalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
 
         // Assert
         Assert.Equal(discounts,actualDiscounts);
@@ -176,9 +177,9 @@ public class CalculationsTest
         _cap.Setup(c => c.GetCapAmount(20.25)).Returns(capAmount);
         
         // Act
-        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345, CombinedDiscount.Additive);
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345, _calculations.CombinedDiscount);
         var actualFinalPrice =
-            _calculations.CalculateFinalPrice(20.25, 12345, new List<IExpenses>(), CombinedDiscount.Additive);
+            _calculations.CalculateFinalPrice(20.25, 12345, new List<IExpenses>(), _calculations.CombinedDiscount);
         
         // Assert
         Assert.Equal(discount,actualDiscount);

@@ -19,6 +19,8 @@ public class Calculations
         _cap = cap;
     }
 
+    public virtual CombinedDiscount CombinedDiscount { get; set; }
+
     public virtual double CalculateFinalPrice(double price, int upc, List<IExpenses> expenses,
         CombinedDiscount combinedDiscount)
     {
