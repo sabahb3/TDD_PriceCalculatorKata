@@ -1,3 +1,4 @@
+using PriceCalculatorKata.Enumerations;
 namespace PriceCalculatorKata.Interfaces;
 
 public interface IProduct
@@ -9,5 +10,7 @@ public interface IProduct
     public double FinalPrice { get; }
     public double Discount { get; }
     public List<IExpenses> Expenses { get; }
+    public CombinedDiscount CombinedDiscount { get; set; }
+
 
 }

@@ -17,12 +17,13 @@ public class Calculations
         _upcDiscount = upcDiscount;
     }
 
-    public virtual double CalculateFinalPrice(double price, int upc,List<IExpenses> expenses)
+    public virtual double CalculateFinalPrice(double price, int upc, List<IExpenses> expenses,
+        CombinedDiscount combinedDiscount)
     {
         return new FormattedDouble(
-            price + CalculateTax(price,upc) - CalculateTotalDiscount(price, upc)+CalculateExpenses(expenses,price)).FormattedNumber;
+            price + CalculateTax(price,upc,combinedDiscount) - CalculateTotalDiscount(price, upc,combinedDiscount)+CalculateExpenses(expenses,price)).FormattedNumber;
     }
-    public virtual double CalculateTax(double price, int upc)
+    public virtual double CalculateTax(double price, int upc, CombinedDiscount combinedDiscount)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         if (_upcDiscount.Contains(upc, out var discount))
@@ -34,7 +35,7 @@ public class Calculations
                 return CalculateTaxBeforeAllDiscount(price);
             else
             {
-                return CalculateTaxAfterAllDiscount(price, upc);
+                return CalculateTaxAfterAllDiscount(price, upc,combinedDiscount);
             }
         }
         else
@@ -47,9 +48,9 @@ public class Calculations
         return new FormattedDouble(price * taxRatio).FormattedNumber;
     }
     
-    private double CalculateTaxAfterAllDiscount(double price, int upc)
+    private double CalculateTaxAfterAllDiscount(double price, int upc,CombinedDiscount combinedDiscount)
     {
-        var discounts = CalculateTotalDiscount(price, upc);
+        var discounts = CalculateTotalDiscount(price, upc,combinedDiscount);
         var remaining = price - discounts;
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
@@ -70,14 +71,14 @@ public class Calculations
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
     }
 
-    public virtual double CalculateTotalDiscount(double price, int upc)
+    public virtual double CalculateTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         Discount discount;
         if (_upcDiscount.Contains(upc, out  discount))
             upcPrecedence = discount!.Precedence;
         if(upcPrecedence==_universalDiscount.Precedence)
-             return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
+             return CombiningDiscounts(price,upc,combinedDiscount);
         else
         {
             switch (upcPrecedence)
@@ -89,7 +90,16 @@ public class Calculations
             }
         }
     }
-
+    private double CombiningDiscounts(double price, int upc, CombinedDiscount combinedDiscount)
+    {
+        if (combinedDiscount == CombinedDiscount.Additive)
+        {
+            return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
+        }
+        var universalDiscount= CalculateUniversalDiscount(price);
+        var remaining = price - universalDiscount;
+        return universalDiscount + CalculateUPCDiscount(remaining, upc);
+    }
     private double CalculateOneDiscountBefore(double price, int firstDiscount, int secondDiscount)
     {
         var discounts= CalculateForOneDiscount(price, firstDiscount);
