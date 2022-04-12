@@ -78,7 +78,7 @@ public class Calculations
         if (_upcDiscount.Contains(upc, out  discount))
             upcPrecedence = discount!.Precedence;
         if(upcPrecedence==_universalDiscount.Precedence)
-             return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
+             return CombiningDiscounts(price,upc,combinedDiscount);
         else
         {
             switch (upcPrecedence)
@@ -89,6 +89,17 @@ public class Calculations
                     return CalculateOneDiscountBefore(price, _universalDiscount.DiscountValue, discount!.DiscountValue);
             }
         }
+    }
+
+    private double CombiningDiscounts(double price, int upc, CombinedDiscount combinedDiscount)
+    {
+        if (combinedDiscount == CombinedDiscount.Additive)
+        {
+           return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
+        }
+        var universalDiscount= CalculateUniversalDiscount(price);
+        var remaining = price - universalDiscount;
+        return universalDiscount + CalculateUPCDiscount(remaining, upc);
     }
 
     private double CalculateOneDiscountBefore(double price, int firstDiscount, int secondDiscount)
