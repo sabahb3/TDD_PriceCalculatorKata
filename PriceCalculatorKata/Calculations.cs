@@ -9,19 +9,22 @@ public class Calculations
     private ITax _tax;
     private IDiscount _universalDiscount;
     private ISpecialDiscount _upcDiscount;
+    private ICap _cap;
 
-    public Calculations(ITax tax, IDiscount universalDiscount, ISpecialDiscount upcDiscount)
+    public Calculations(ITax tax, IDiscount universalDiscount, ISpecialDiscount upcDiscount,ICap cap)
     {
         _tax = tax;
         _universalDiscount = universalDiscount;
         _upcDiscount = upcDiscount;
+        _cap = cap;
     }
 
     public virtual double CalculateFinalPrice(double price, int upc, List<IExpenses> expenses,
         CombinedDiscount combinedDiscount)
     {
         return new FormattedDouble(
-            price + CalculateTax(price,upc,combinedDiscount) - CalculateTotalDiscount(price, upc,combinedDiscount)+CalculateExpenses(expenses,price)).FormattedNumber;
+            price + CalculateTax(price, upc, combinedDiscount) - CalculateTotalDiscount(price, upc, combinedDiscount) + 
+            CalculateExpenses(expenses, price)).FormattedNumber;
     }
     public virtual double CalculateTax(double price, int upc, CombinedDiscount combinedDiscount)
     {
@@ -58,27 +61,38 @@ public class Calculations
     
     private double CalculateTaxAfterOneDiscount(double price, int upc)
     {
-        double remaining;
+        double discount;
         if (_universalDiscount.Precedence == DiscountPrecedence.BeforeTax)
         {
-            remaining = price - CalculateUniversalDiscount(price);
+            discount = CalculateUniversalDiscount(price);
         }
         else
         {
-            remaining = price - CalculateUPCDiscount(price, upc);
+          discount = CalculateUPCDiscount(price, upc);
         }
+
+        var cap = _cap.GetCapAmount(price);
+        if (discount > cap) discount = cap;
+        var remaining = price - discount;
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
     }
-
     public virtual double CalculateTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
+    {
+        var actualDiscount = CalculateActualTotalDiscount(price, upc, combinedDiscount);
+        var cap = _cap.GetCapAmount(price);
+        var discount = actualDiscount > cap ? cap : actualDiscount;
+        return discount;
+    }
+
+    private double CalculateActualTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         Discount discount;
         if (_upcDiscount.Contains(upc, out  discount))
             upcPrecedence = discount!.Precedence;
         if(upcPrecedence==_universalDiscount.Precedence)
-             return CombiningDiscounts(price,upc,combinedDiscount);
+            return CombiningDiscounts(price,upc,combinedDiscount);
         else
         {
             switch (upcPrecedence)
