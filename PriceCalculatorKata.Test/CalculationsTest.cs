@@ -159,8 +159,11 @@ public class CalculationsTest
 
     }
 
-    [Fact]
-    public void ShouldUseCapWhileCalculatingDiscount()
+    [Theory]
+    [InlineData(4.05,20.45,4.05)]
+    [InlineData(4,20.50,4)]
+    [InlineData(4.46,20.04,6.08)]
+    public void ShouldUseCapWhileCalculatingDiscount(double discount,double finalPrice,double capAmount)
     {
         // Arrange
         _tax.Setup(t => t.TaxValue).Returns(21);
@@ -170,16 +173,16 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         var expenses = InitializingExpenses();
         _cap.Setup(c => c.Type).Returns(PriceType.Absolute);
-        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(4);
+        _cap.Setup(c => c.GetCapAmount(20.25)).Returns(capAmount);
         
         // Act
-        var discount = _calculations.CalculateTotalDiscount(20.25, 12345, CombinedDiscount.Additive);
-        var finalPrice =
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345, CombinedDiscount.Additive);
+        var actualFinalPrice =
             _calculations.CalculateFinalPrice(20.25, 12345, new List<IExpenses>(), CombinedDiscount.Additive);
         
         // Assert
-        Assert.Equal(4,discount);
-        Assert.Equal(20.50,finalPrice);
+        Assert.Equal(discount,actualDiscount);
+        Assert.Equal(finalPrice,actualFinalPrice);
     }
     public static List<IExpenses> InitializingExpenses()
     {
