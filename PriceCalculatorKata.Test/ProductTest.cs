@@ -30,8 +30,8 @@ public class ProductTest
     public void ShouldCalculateTaxAmountBasedOnProductPrice(int tax, double price,double taxAmount,double finalPrice)
     {
         // Arrange
-        _calculations.Setup(x => x.CalculateTax(price,_product.UPC)).Returns(taxAmount);
-        _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC,new List<IExpenses>())).Returns(finalPrice);
+        _calculations.Setup(x => x.CalculateTax(price,_product.UPC,_product.CombinedDiscount)).Returns(taxAmount);
+        _calculations.Setup(x => x.CalculateFinalPrice(price, _product.UPC,new List<IExpenses>(),_product.CombinedDiscount)).Returns(finalPrice);
 
         // Act
         var actualTaxAmount = _product.Tax;
@@ -47,9 +47,9 @@ public class ProductTest
     public void ShouldTakeDiscountInAccountWhileCalculatingFinalPrice()
     {
         // Arrange
-        _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345,new List<IExpenses>())).Returns(21.26);
-        _calculations.Setup(t => t.CalculateTax(_product.Price,_product.UPC)).Returns(4.05);
-        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC)).Returns(3.04);
+        _calculations.Setup(c => c.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),_product.CombinedDiscount)).Returns(21.26);
+        _calculations.Setup(t => t.CalculateTax(_product.Price,_product.UPC,_product.CombinedDiscount)).Returns(4.05);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_product.CombinedDiscount)).Returns(3.04);
         
         // Act
         var taxAmount = _product.Tax;
@@ -71,8 +71,8 @@ public class ProductTest
         int upcDiscount, int upcNumber,double totalDiscount,double finalPrice, string message)
     {
         // Arrange
-        _calculations.Setup(c => c.CalculateFinalPrice(_product.Price,_product.UPC,new List<IExpenses>())).Returns(finalPrice);
-        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC)).Returns(totalDiscount);
+        _calculations.Setup(c => c.CalculateFinalPrice(_product.Price,_product.UPC,new List<IExpenses>(),_product.CombinedDiscount)).Returns(finalPrice);
+        _calculations.Setup(d => d.CalculateTotalDiscount(_product.Price, _product.UPC,_product.CombinedDiscount)).Returns(totalDiscount);
 
         // Act
         var actualFinalPrice = _product.FinalPrice;
