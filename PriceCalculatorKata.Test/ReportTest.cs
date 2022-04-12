@@ -14,13 +14,14 @@ public class ReportTest
     public ReportTest()
     {
         _product = new Mock<IProduct>();
+        _product.Setup(p => p.CurrencyCode).Returns("USD");
         _upcDiscount = new Mock<ISpecialDiscount>();
         _report = new Report(_product.Object,_upcDiscount.Object);
     }
     
     [Theory]
-    [InlineData(3.04,21.26,"Cost = $20.25\n Tax = $0.00\n Discounts = $3.04\n TOTAL = $21.26\n $3.04 discount")]
-    [InlineData(0,24.30,"Cost = $20.25\n Tax = $0.00\n TOTAL = $24.30\n no discounts")]
+    [InlineData(3.04,21.26,"Cost = 20.25 USD\n Tax = 0.00 USD\n Discounts = 3.04 USD\n TOTAL = 21.26 USD\n 3.04 USD discount")]
+    [InlineData(0,24.30,"Cost = 20.25 USD\n Tax = 0.00 USD\n TOTAL = 24.30 USD\n no discounts")]
     public void ShouldReportTheProduct(double discountAmount,double finalPrice, string message)
     {
         // Arrange
@@ -36,8 +37,8 @@ public class ReportTest
     }
     
     [Theory]
-    [InlineData(4.05,4.46,19.84,"Cost = $20.25\n Tax = $4.05\n Discounts = $4.46\n TOTAL = $19.84\n $4.46 total discount",12345,"7")]
-    [InlineData(4.25,3.04,21.46,"Cost = $20.25\n Tax = $4.25\n Discounts = $3.04\n TOTAL = $21.46\n $3.04 discount",789,"7")]
+    [InlineData(4.05,4.46,19.84,"Cost = 20.25 USD\n Tax = 4.05 USD\n Discounts = 4.46 USD\n TOTAL = 19.84 USD\n 4.46 USD total discount",12345,"7")]
+    [InlineData(4.25,3.04,21.46,"Cost = 20.25 USD\n Tax = 4.25 USD\n Discounts = 3.04 USD\n TOTAL = 21.46 USD\n 3.04 USD discount",789,"7")]
     public void ShouldReportTheProductWithUPCDiscount(double taxAmount,double discountAmount,double finalPrice, string message,int upc, string discount )
     {
         // Arrange
@@ -75,7 +76,7 @@ public class ReportTest
         var actualMessage = _report.DisplayProductReport();
 
         var message =
-            "Cost = $20.25\n Tax = $4.25\n Discounts = $4.46\n Packaging = $0.20\n Transport = $2.20\n TOTAL = $22.44\n $4.46 total discount";
+            "Cost = 20.25 USD\n Tax = 4.25 USD\n Discounts = 4.46 USD\n Packaging = 0.20 USD\n Transport = 2.20 USD\n TOTAL = 22.44 USD\n 4.46 USD total discount";
 
         // Assert
         Assert.Equal(message,actualMessage);
@@ -93,12 +94,28 @@ public class ReportTest
         var actualMessage = _report.DisplayProductReport();
 
         var message =
-            "Cost = $20.25\n Tax = $4.25\n TOTAL = $24.50\n no discounts";
+            "Cost = 20.25 USD\n Tax = 4.25 USD\n TOTAL = 24.50 USD\n no discounts";
 
         // Assert
         Assert.Equal(message,actualMessage);
     }
-    
-    
+    [Fact]
+    public void ShouldReportProductWithCurrencyCode()
+    {
+        // Arrange
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.Tax).Returns(4.25);
+        _product.Setup(p => p.FinalPrice).Returns(24.50);
+        _product.Setup(p => p.CurrencyCode).Returns("USD");
+
+        // Act
+        var actualMessage = _report.DisplayProductReport();
+
+        var message =
+            "Cost = 20.25 USD\n Tax = 4.25 USD\n TOTAL = 24.50 USD\n no discounts";
+
+        // Assert
+        Assert.Equal(message,actualMessage);
+    }
 }
 

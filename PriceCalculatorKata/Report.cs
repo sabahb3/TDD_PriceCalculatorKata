@@ -18,14 +18,15 @@ public class Report
     public string DisplayProductReport()
     {
         int noDiscount = 0;
+        var currencyCode = _product.CurrencyCode;
         var finalPrice = _product.FinalPrice.ToString("#0.00", CultureInfo.InvariantCulture);
         var discount = _product.Discount.ToString("#0.00", CultureInfo.InvariantCulture);
         var tax = _product.Tax.ToString("#0.00",CultureInfo.InvariantCulture);
-        string message=$"Cost = ${_product.Price}\n ";
-        message += $"Tax = ${tax}\n ";
-        if(_product.Discount!=0) message += $"Discounts = ${discount}\n ";
+        string message=$"Cost = {_product.Price} {currencyCode}\n ";
+        message += $"Tax = {tax} {currencyCode}\n ";
+        if(_product.Discount!=0) message += $"Discounts = {discount} {currencyCode}\n ";
         message += ReportingExpenses();
-        message += $"TOTAL = ${finalPrice}\n ";
+        message += $"TOTAL = {finalPrice} {currencyCode}\n ";
         if (_product.Discount == noDiscount)
         {
             message += "no discounts";
@@ -33,10 +34,10 @@ public class Report
         }
         if (_upcDiscounts.Contains(_product.UPC, out var upcDiscount))
         {
-            message += $"${discount} total discount";
+            message += $"{discount} {currencyCode} total discount";
             return message;
         }
-        message += $"${discount} discount";
+        message += $"{discount} {currencyCode} discount";
         return message;
     }
 
@@ -45,9 +46,9 @@ public class Report
         if(_product.Expenses==null)return String.Empty;
         string message=string.Empty;
         var expenses = _product.Expenses.Select(e => e.Type == PriceType.Absolute 
-            ? $"{e.Description} = ${e.Amount.ToString("#0.00", CultureInfo.InvariantCulture)}"
+            ? $"{e.Description} = {e.Amount.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}"
             : 
-            $"{e.Description} = ${new FormattedDouble(_product.Price * e.Amount).FormattedNumber.ToString("#0.00", CultureInfo.InvariantCulture)}");
+            $"{e.Description} = {new FormattedDouble(_product.Price * e.Amount).FormattedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}");
         message+=String.Join("\n ",expenses)+"\n ";
         return message;
     }
