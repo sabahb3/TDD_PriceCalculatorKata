@@ -33,7 +33,7 @@ public class Product: IProduct
 
     public int UPC { get; private set; }
     public string Name { get; set; }=String.Empty;
-    
+    public string CurrencyCode { get; }
     public double Tax
     {
         get
