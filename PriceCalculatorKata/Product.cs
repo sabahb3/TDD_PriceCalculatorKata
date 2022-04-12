@@ -10,30 +10,48 @@ public class Product: IProduct
     private Calculations _calculations;
     private double _price;
     private List<IExpenses> _expenses;
-    public Product(int upc, string name, double price, Calculations calculations,List<IExpenses> expenses)
+    public Product(int upc, string name, Currency currency, Calculations calculations,List<IExpenses> expenses)
     {
         UPC = upc;
         Name = name ?? String.Empty;
-        Price = price;
         _calculations = calculations;
         _expenses = expenses;
+        ProductCurrency = currency;
     }
+    public int UPC { get; private set; }
+    public string Name { get; set; }=String.Empty;
+    public Currency ProductCurrency { get; private set; }
 
     public double Price
     {
         get
         {
-            return _price;
+            return ProductCurrency.Price;
         }
-        private set
+        set
         {
-            _price = new FormattedDouble(value).FormattedNumber;
+            SetCurrency(value,ProductCurrency.CurrencyCode);
+            Price = ProductCurrency.Price;
         }
     }
 
-    public int UPC { get; private set; }
-    public string Name { get; set; }=String.Empty;
-    public Currency CurrencyCode { get; }
+    public string CurrencyCode
+    {
+        get
+        {
+            return ProductCurrency.CurrencyCode!;
+        }
+        set
+        {
+            SetCurrency(Price,value);
+            CurrencyCode = ProductCurrency.CurrencyCode!;
+        }
+    }
+    public void SetCurrency(double price, string code)
+    {
+        var p = new FormattedDouble(price).FormattedNumber;
+        ProductCurrency.SetCurrency(code,p);
+    }
     public double Tax
     {
         get
