@@ -80,6 +80,24 @@ public class ReportTest
         // Assert
         Assert.Equal(message,actualMessage);
     }
+
+    [Fact]
+    public void ShouldReportProductWithNoDiscountAndAdditionalCost()
+    {
+        // Arrange
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.Tax).Returns(4.25);
+        _product.Setup(p => p.FinalPrice).Returns(24.50);
+
+        // Act
+        var actualMessage = _report.DisplayProductReport();
+
+        var message =
+            "Cost = $20.25\n Tax = $4.25\n TOTAL = $24.50\n no discounts";
+
+        // Assert
+        Assert.Equal(message,actualMessage);
+    }
     
     
 }
