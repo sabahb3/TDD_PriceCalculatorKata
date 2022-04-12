@@ -18,9 +18,9 @@ public class Report
     public string DisplayProductReport()
     {
         int noDiscount = 0;
-        var finalPrice = _product.FinalPrice.ToString("#.00", CultureInfo.InvariantCulture);
-        var discount = _product.Discount.ToString("#.00", CultureInfo.InvariantCulture);
-        var tax = _product.Tax.ToString("#.00",CultureInfo.InvariantCulture);
+        var finalPrice = _product.FinalPrice.ToString("#0.00", CultureInfo.InvariantCulture);
+        var discount = _product.Discount.ToString("#0.00", CultureInfo.InvariantCulture);
+        var tax = _product.Tax.ToString("#0.00",CultureInfo.InvariantCulture);
         string message=$"Cost = ${_product.Price}\n ";
         message += $"Tax = ${tax}\n ";
         message += $"Discounts = ${discount}\n ";
@@ -36,12 +36,13 @@ public class Report
             message += $"${discount} total discount";
             return message;
         }
-        message += $"discount amount ${discount}";
+        message += $"${discount} discount";
         return message;
     }
 
     private string ReportingExpenses()
     {
+        if(_product.Expenses==null)return String.Empty;
         string message=string.Empty;
         var expenses = _product.Expenses.Select(e => e.Type == PriceType.Absolute 
             ? $"{e.Description} = ${e.Amount.ToString("#0.00", CultureInfo.InvariantCulture)}"
