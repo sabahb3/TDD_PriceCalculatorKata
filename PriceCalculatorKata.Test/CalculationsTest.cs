@@ -29,7 +29,7 @@ public class CalculationsTest
         _tax.Setup(t => t.TaxValue).Returns(20);
         
         // Act
-        var tax = _calculations.CalculateTax(20.25,12345);
+        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
         
         // Assert
         Assert.Equal(4.05,tax);
@@ -77,7 +77,7 @@ public class CalculationsTest
         _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
 
         // Act
-        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345);
+        var actualDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
         
         // Assert
         Assert.Equal(discount,actualDiscount);
@@ -96,9 +96,9 @@ public class CalculationsTest
         _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
         
         // Act
-        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345);
-        var tax = _calculations.CalculateTax(20.25,12345);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>());
+        var totalDiscount = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
+        var tax = _calculations.CalculateTax(20.25,12345,CombinedDiscount.Additive);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,new List<IExpenses>(),CombinedDiscount.Additive);
         
         // Assert
         Assert.Equal(4.24,totalDiscount);
@@ -121,9 +121,9 @@ public class CalculationsTest
         
         // Act
         var expensesCost = _calculations.CalculateExpenses(expenses, 20.25);
-        var tax = _calculations.CalculateTax(20.25, 12345);
-        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345);
-        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses);
+        var tax = _calculations.CalculateTax(20.25, 12345,CombinedDiscount.Additive);
+        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,CombinedDiscount.Additive);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,CombinedDiscount.Additive);
         
         // Assert
         Assert.Equal(2.4,expensesCost);
