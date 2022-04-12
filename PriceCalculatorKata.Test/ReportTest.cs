@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Moq;
+using PriceCalculatorKata.Enumerations;
 using PriceCalculatorKata.Interfaces;
 using Xunit;
 
@@ -113,6 +115,32 @@ public class ReportTest
 
         var message =
             "Cost = 20.25 USD\n Tax = 4.25 USD\n TOTAL = 24.50 USD\n no discounts";
+
+        // Assert
+        Assert.Equal(message,actualMessage);
+    }
+    [Fact]
+    public void ShouldReportProductWithTwoDecimalDigitsPrecision ()
+    {
+        // Arrange
+        _product.Setup(p => p.Price).Returns(20.25);
+        _product.Setup(p => p.UPC).Returns(12345);
+        _product.Setup(p => p.Tax).Returns(4.2525);
+        _product.Setup(p => p.Discount).Returns(4.2424);
+        _product.Setup(p => p.FinalPrice).Returns(20.8676);
+        _product.Setup(p => p.CurrencyCode).Returns("USD");
+        _product.Setup(p => p.Expenses).Returns(new List<IExpenses>()
+        {
+            new Expense("Transport", 3, PriceType.Percentage)
+        });
+        Discount discount;
+        _upcDiscount.Setup(d => d.Contains(12345, out discount)).Returns(true);
+
+        // Act
+        var actualMessage = _report.DisplayProductReport();
+
+        var message =
+            "Cost = 20.25 USD\n Tax = 4.25 USD\n Discounts = 4.24 USD\n Transport = 0.61 USD\n TOTAL = 20.87 USD\n 4.24 USD total discount";
 
         // Assert
         Assert.Equal(message,actualMessage);

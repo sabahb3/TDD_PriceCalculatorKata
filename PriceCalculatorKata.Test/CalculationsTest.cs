@@ -185,6 +185,34 @@ public class CalculationsTest
         Assert.Equal(discount,actualDiscount);
         Assert.Equal(finalPrice,actualFinalPrice);
     }
+    [Fact]
+    public void ShouldUseFourDecimalDigitsPrecisionWhileCalculating()
+    {
+        // Arrange
+        var expenses = new List<IExpenses>
+        {
+            new Expense("Transport", 3, PriceType.Percentage)
+
+        };
+        _tax.Setup(t => t.TaxValue).Returns(21);
+        _universalDiscount.Setup(d => d.DiscountValue).Returns(15);
+        var upcD = new Discount();
+        upcD.SetDiscount("7");
+        _upcDiscount.Setup(d=>d.Contains(12345, out upcD)).Returns(true);
+        _calculations.CombinedDiscount = CombinedDiscount.Multiplicative;
+        
+        // Act
+        var expensesCost = _calculations.CalculateExpenses(expenses, 20.25);
+        var tax = _calculations.CalculateTax(20.25, 12345,_calculations.CombinedDiscount);
+        var discounts = _calculations.CalculateTotalDiscount(20.25, 12345,_calculations.CombinedDiscount);
+        var finalPrice = _calculations.CalculateFinalPrice(20.25, 12345,expenses,_calculations.CombinedDiscount);
+        
+        // Assert
+        Assert.Equal(0.6075,expensesCost);
+        Assert.Equal(4.2525,tax);
+        Assert.Equal(4.2424,discounts);
+        Assert.Equal(20.8676,finalPrice);
+    }
     public static List<IExpenses> InitializingExpenses()
     {
         List <IExpenses > expenses= new List<IExpenses>();
