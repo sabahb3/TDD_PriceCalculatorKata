@@ -19,10 +19,10 @@ public class Report
     {
         int noDiscount = 0;
         var currencyCode = _product.CurrencyCode;
-        var finalPrice = _product.FinalPrice.ToString("#0.00", CultureInfo.InvariantCulture);
-        var discount = _product.Discount.ToString("#0.00", CultureInfo.InvariantCulture);
-        var tax = _product.Tax.ToString("#0.00",CultureInfo.InvariantCulture);
-        string message=$"Cost = {_product.Price} {currencyCode}\n ";
+        var finalPrice = new FormattedDouble(_product.FinalPrice).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture);
+        var discount = new FormattedDouble(_product.Discount).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture);
+        var tax = new FormattedDouble(_product.Tax).DisplayedNumber.ToString("#0.00",CultureInfo.InvariantCulture);
+        string message=$"Cost = {new FormattedDouble(_product.Price).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {currencyCode}\n ";
         message += $"Tax = {tax} {currencyCode}\n ";
         if(_product.Discount!=0) message += $"Discounts = {discount} {currencyCode}\n ";
         message += ReportingExpenses();
@@ -46,9 +46,9 @@ public class Report
         if(_product.Expenses==null)return String.Empty;
         string message=string.Empty;
         var expenses = _product.Expenses.Select(e => e.Type == PriceType.Absolute 
-            ? $"{e.Description} = {e.Amount.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}"
+            ? $"{e.Description} = {new FormattedDouble(e.Amount).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}"
             : 
-            $"{e.Description} = {new FormattedDouble(_product.Price * e.Amount).FormattedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}");
+            $"{e.Description} = {new FormattedDouble(_product.Price * e.Amount).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {_product.CurrencyCode}");
         message+=String.Join("\n ",expenses)+"\n ";
         return message;
     }
