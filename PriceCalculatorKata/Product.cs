@@ -73,5 +73,13 @@ public class Product: IProduct
         }
     }
 
+    public double UpcDiscount
+    {
+        get
+        {
+            return _calculations.CalculateUPCDiscount(Price,UPC);
+        }
+    }
+
     public List<IExpenses> Expenses => _expenses;
 }

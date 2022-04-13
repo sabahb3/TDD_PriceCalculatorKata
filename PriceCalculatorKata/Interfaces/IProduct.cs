@@ -11,6 +11,6 @@ public interface IProduct
     public double Discount { get; }
     public List<IExpenses> Expenses { get; }
     public Currency ProductCurrency { get; }
-
+    public double UpcDiscount { get; }
     public string CurrencyCode { get; }
 }
