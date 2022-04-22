@@ -47,7 +47,7 @@ public class Calculations
             return CalculateTaxAfterOneDiscount(price,upc);
     }
     
-    public double CalculateTaxBeforeAllDiscount(double price)
+    public virtual double CalculateTaxBeforeAllDiscount(double price)
     {
         var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * taxRatio).FormattedNumber;
@@ -146,7 +146,7 @@ public class Calculations
         return new FormattedDouble(price * universalDiscountRatio).FormattedNumber;
     }
 
-    public double CalculateExpenses(List<IExpenses> expenses, double price)
+    public virtual double CalculateExpenses(List<IExpenses> expenses, double price)
     {
         var expenseCost = expenses.Where(e => e.Type == PriceType.Percentage)
             .Select(e => new FormattedDouble(price * e.Amount).FormattedNumber).Sum();
