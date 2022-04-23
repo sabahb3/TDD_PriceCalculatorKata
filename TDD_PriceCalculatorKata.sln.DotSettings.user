@@ -1,6 +1,22 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7df34da_002D2838_002D436d_002D93c8_002De529ce374bcb/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ShouldCalculteTaxAmountBasedOnProductPrice" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">/home/hp/.cache/JetBrains/Rider2021.3/resharper-host/temp/Rider/vAny/CoverageData/_TDD_PriceCalculatorKata.-166365265/Snapshot/snapshot.utdcvr</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0fc89331_002D55b5_002D431f_002Dbe70_002D4af74b9037d0/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ShouldReportingProductWithExpenses" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;ProjectFile&gt;DAA302C2-998B-4051-A98A-15F8AB0F6BF2/f:ReportTest.cs&lt;/ProjectFile&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2860106d_002D9913_002D4484_002D9a55_002Decf9af456e21/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from ProductTest.cs #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;ProjectFile&gt;DAA302C2-998B-4051-A98A-15F8AB0F6BF2/f:ProductTest.cs&lt;/ProjectFile&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=622438b2_002D37e5_002D49cc_002D9333_002Db527ac3beeca/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;PriceCalculatorKata.Test&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/home/hp/Desktop/FOOTHILL/programming/Testing/TDD_PriceCalculatorKata/PriceCalculatorKata.Test" Presentation="&amp;lt;PriceCalculatorKata.Test&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6b52a6d3_002D2a14_002D461d_002Dbcb6_002D3abbc4f72306/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from ProductTest.cs" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/home/hp/Desktop/FOOTHILL/programming/Testing/TDD_PriceCalculatorKata/PriceCalculatorKata.Test" Presentation="&amp;lt;PriceCalculatorKata.Test&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=91cef171_002D84cd_002D4cb7_002Da775_002Df569af9059cd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ShouldReportTheProductWithUPCDiscount" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::DAA302C2-998B-4051-A98A-15F8AB0F6BF2::net6.0::PriceCalculatorKata.Test.ProductTest&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::DAA302C2-998B-4051-A98A-15F8AB0F6BF2::net6.0::PriceCalculatorKata.Test.ReportTest.ShouldReportTheProductWithUPCDiscount&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b7df34da_002D2838_002D436d_002D93c8_002De529ce374bcb/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ShouldCalculteTaxAmountBasedOnProductPrice" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/home/hp/Desktop/FOOTHILL/programming/Testing/TDD_PriceCalculatorKata/PriceCalculatorKata.Test" Presentation="&amp;lt;PriceCalculatorKata.Test&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
