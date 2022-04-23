@@ -5,7 +5,6 @@ namespace PriceCalculatorKata;
 
 public class Product : IProduct
 {
-    private double _price;
     private List<IExpenses> _expenses;
 
     public Product(int upc, string name, Currency currency, List<IExpenses> expenses)
