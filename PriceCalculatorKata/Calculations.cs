@@ -4,153 +4,136 @@ using PriceCalculatorKata.Structures;
 
 namespace PriceCalculatorKata;
 
-public class Calculations
+public static class Calculations 
 {
-    private ITax _tax;
-    private IDiscount _universalDiscount;
-    private ISpecialDiscount _upcDiscount;
-    private ICap _cap;
-
-    public Calculations(ITax tax, IDiscount universalDiscount, ISpecialDiscount upcDiscount,ICap cap)
-    {
-        _tax = tax;
-        _universalDiscount = universalDiscount;
-        _upcDiscount = upcDiscount;
-        _cap = cap;
-    }
-
-    public virtual CombinedDiscount CombinedDiscount { get; set; }
-
-    public virtual double CalculateFinalPrice(double price, int upc, List<IExpenses> expenses,
-        CombinedDiscount combinedDiscount)
+    public static double CalculateFinalPrice(this IProduct product, IAccounting accounting)
     {
         return new FormattedDouble(
-            price + CalculateTax(price, upc, combinedDiscount) - CalculateTotalDiscount(price, upc, combinedDiscount) + 
-            CalculateExpenses(expenses, price)).FormattedNumber;
+            product.Price + CalculateTax(product,accounting) 
+            - CalculateTotalDiscount(product,accounting) + 
+            CalculateExpenses(product)).FormattedNumber;
     }
-    public virtual double CalculateTax(double price, int upc, CombinedDiscount combinedDiscount)
+    public static  double CalculateTax(this IProduct product,IAccounting accounting)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
-        if (_upcDiscount.Contains(upc, out var discount))
+        if (accounting.UpcDiscount(product.UPC, out var discount))
             upcPrecedence = discount!.Precedence;
 
-        if (upcPrecedence == _universalDiscount.Precedence)
+        if (upcPrecedence == accounting.UniversalDiscountPrecedence)
         {
             if (upcPrecedence == DiscountPrecedence.AfterTax)
-                return CalculateTaxBeforeAllDiscount(price);
+                return CalculateTaxBeforeAllDiscount(product.Price,accounting.Tax);
             else
             {
-                return CalculateTaxAfterAllDiscount(price, upc,combinedDiscount);
+                return CalculateTaxAfterAllDiscount(product,accounting);
             }
         }
         else
-            return CalculateTaxAfterOneDiscount(price,upc);
+            return CalculateTaxAfterOneDiscount(product.Price,product.UPC,accounting);
     }
-    
-    public virtual double CalculateTaxBeforeAllDiscount(double price)
+    public static double CalculateTaxBeforeAllDiscount(double price,int tax)
     {
-        var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
+        var taxRatio = new FormattedDouble(tax/ 100.0).FormattedNumber;
         return new FormattedDouble(price * taxRatio).FormattedNumber;
     }
-    
-    private double CalculateTaxAfterAllDiscount(double price, int upc,CombinedDiscount combinedDiscount)
+    private static double CalculateTaxAfterAllDiscount(IProduct product, IAccounting accounting)
     {
-        var discounts = CalculateTotalDiscount(price, upc,combinedDiscount);
-        var remaining = price - discounts;
-        var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
+        var discounts = CalculateTotalDiscount(product,accounting);
+        var remaining = product.Price - discounts;
+        var taxRatio = new FormattedDouble(accounting.Tax / 100.0).FormattedNumber;
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
     }
-    
-    private double CalculateTaxAfterOneDiscount(double price, int upc)
+    private static double CalculateTaxAfterOneDiscount(double price, int upc,IAccounting accounting)
     {
         double discount;
-        if (_universalDiscount.Precedence == DiscountPrecedence.BeforeTax)
+        if (accounting.UniversalDiscountPrecedence == DiscountPrecedence.BeforeTax)
         {
-            discount = CalculateUniversalDiscount(price);
+            discount = CalculateForOneDiscount(price,accounting.UniversalDiscount);
         }
         else
         {
-          discount = CalculateUPCDiscount(price, upc);
+          discount = CalculateUpcDiscount(price, upc,accounting);
         }
 
-        var cap = _cap.GetCapAmount(price);
+        var cap = accounting.CapAmount(price);
         if (discount > cap) discount = cap;
         var remaining = price - discount;
-        var taxRatio = new FormattedDouble(_tax.TaxValue / 100.0).FormattedNumber;
+        var taxRatio = new FormattedDouble(accounting.Tax / 100.0).FormattedNumber;
         return new FormattedDouble(remaining * taxRatio).FormattedNumber;
     }
-    public virtual double CalculateTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
+    public static double CalculateTotalDiscount(this IProduct product, IAccounting accounting)
     {
-        var actualDiscount = CalculateActualTotalDiscount(price, upc, combinedDiscount);
-        var cap = _cap.GetCapAmount(price);
+        var actualDiscount = CalculateActualTotalDiscount(product,accounting);
+        var cap = accounting.CapAmount(product.Price);
         var discount = actualDiscount > cap ? cap : actualDiscount;
         return discount;
     }
-
-    private double CalculateActualTotalDiscount(double price, int upc, CombinedDiscount combinedDiscount)
+    private static double CalculateActualTotalDiscount(IProduct product, IAccounting accounting)
     {
         DiscountPrecedence upcPrecedence=DiscountPrecedence.AfterTax;
         Discount discount;
-        if (_upcDiscount.Contains(upc, out  discount))
+        if (accounting.UpcDiscount(product.UPC,out discount))
             upcPrecedence = discount!.Precedence;
-        if(upcPrecedence==_universalDiscount.Precedence)
-            return CombiningDiscounts(price,upc,combinedDiscount);
+        if(upcPrecedence==accounting.UniversalDiscountPrecedence)
+            return CombiningDiscounts(product,accounting);
         else
         {
             switch (upcPrecedence)
             {
                 case DiscountPrecedence.BeforeTax:
-                    return CalculateOneDiscountBefore(price, discount!.DiscountValue, _universalDiscount.DiscountValue);
+                    return CalculateOneDiscountBefore(product.Price, discount!.DiscountValue, accounting.UniversalDiscount);
                 default:
-                    return CalculateOneDiscountBefore(price, _universalDiscount.DiscountValue, discount!.DiscountValue);
+                    return CalculateOneDiscountBefore(product.Price, accounting.UniversalDiscount, discount!.DiscountValue);
             }
         }
     }
-    private double CombiningDiscounts(double price, int upc, CombinedDiscount combinedDiscount)
+    private static double CombiningDiscounts(IProduct product, IAccounting accounting)
     {
-        if (combinedDiscount == CombinedDiscount.Additive)
+        if (accounting.CombinedDiscount == CombinedDiscount.Additive)
         {
-            return CalculateUPCDiscount(price,upc) + CalculateUniversalDiscount(price);
+            return CalculateUpcDiscount(product.Price,product.UPC,accounting) + CalculateForOneDiscount(product.Price,accounting.UniversalDiscount);
         }
-        var universalDiscount= CalculateUniversalDiscount(price);
-        var remaining = price - universalDiscount;
-        return universalDiscount + CalculateUPCDiscount(remaining, upc);
+        var universalDiscount= CalculateForOneDiscount(product.Price,accounting.UniversalDiscount);
+        var remaining = product.Price - universalDiscount;
+        return universalDiscount + CalculateUpcDiscount(remaining, product.UPC,accounting);
     }
-    private double CalculateOneDiscountBefore(double price, int firstDiscount, int secondDiscount)
+    private static double CalculateOneDiscountBefore(double price, int firstDiscount, int secondDiscount)
     {
         var discounts= CalculateForOneDiscount(price, firstDiscount);
         var remaining = price - discounts;
         return discounts + CalculateForOneDiscount(remaining, secondDiscount);
 
     }
-    private  double CalculateForOneDiscount(double price, int discountValue)
+    private  static double CalculateForOneDiscount(double price, int discountValue)
     {
         var discountRatio = new FormattedDouble( discountValue / 100.0).FormattedNumber;
         return new FormattedDouble(price * discountRatio).FormattedNumber;
     }
-    public virtual double CalculateUPCDiscount(double price, int upc)
+    public static double CalculateUpcDiscount(double price, int upc,IAccounting accounting)
     {
         double upcDiscount=0d;
-        if (_upcDiscount.Contains(upc, out var discount))
+        if (accounting.UpcDiscount(upc,out var discount))
         {
             var upcDiscountRatio = new FormattedDouble(discount!.DiscountValue / 100.0).FormattedNumber;
             upcDiscount = new FormattedDouble(price * upcDiscountRatio).FormattedNumber;
         }
-
         return upcDiscount;
     }
-    
-    public virtual double CalculateUniversalDiscount(double price)
+    public static double UpcDiscount(this IProduct product,IAccounting accounting)
     {
-        var universalDiscountRatio = new FormattedDouble(_universalDiscount.DiscountValue / 100.0).FormattedNumber;
-        return new FormattedDouble(price * universalDiscountRatio).FormattedNumber;
+        double upcDiscount=0d;
+        if (accounting.UpcDiscount(product.UPC,out var discount))
+        {
+            var upcDiscountRatio = new FormattedDouble(discount!.DiscountValue / 100.0).FormattedNumber;
+            upcDiscount = new FormattedDouble(product.Price * upcDiscountRatio).FormattedNumber;
+        }
+        return upcDiscount;
     }
-
-    public virtual double CalculateExpenses(List<IExpenses> expenses, double price)
+    public static double CalculateExpenses(this IProduct product)
     {
-        var expenseCost = expenses.Where(e => e.Type == PriceType.Percentage)
-            .Select(e => new FormattedDouble(price * e.Amount).FormattedNumber).Sum();
-        expenseCost += expenses.Where(e => e.Type == PriceType.Absolute)
+        var expenseCost = product.Expenses.Where(e => e.Type == PriceType.Percentage)
+            .Select(e => new FormattedDouble(product.Price * e.Amount).FormattedNumber).Sum();
+        expenseCost += product.Expenses.Where(e => e.Type == PriceType.Absolute)
             .Select(e => new FormattedDouble(e.Amount).FormattedNumber).Sum();
         return new FormattedDouble(expenseCost).FormattedNumber;
     }
