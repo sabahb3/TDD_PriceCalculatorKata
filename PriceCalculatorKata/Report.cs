@@ -8,15 +8,14 @@ namespace PriceCalculatorKata;
 public class Report
 {
 
-    public string DisplayProductReport(IProduct product, Calculations calculations)
+    public string DisplayProductReport(IProduct product, IAccounting accounting)
     {
         int noDiscount = 0;
         var currencyCode = product.CurrencyCode;
-        var finalPrice = new FormattedDouble(calculations.CalculateFinalPrice(product.Price,product.UPC,product.Expenses,calculations.CombinedDiscount)).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture);
-        var calculatedDiscount =
-            calculations.CalculateTotalDiscount(product.Price, product.UPC, calculations.CombinedDiscount);
+        var finalPrice = new FormattedDouble(product.CalculateFinalPrice(accounting)).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture);
+        var calculatedDiscount = product.CalculateTotalDiscount(accounting);
         var discount = new FormattedDouble(calculatedDiscount).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture);
-        var tax = new FormattedDouble(calculations.CalculateTax(product.Price,product.UPC,calculations.CombinedDiscount)).DisplayedNumber.ToString("#0.00",CultureInfo.InvariantCulture);
+        var tax = new FormattedDouble(product.CalculateTax(accounting)).DisplayedNumber.ToString("#0.00",CultureInfo.InvariantCulture);
         string message=$"Cost = {new FormattedDouble(product.Price).DisplayedNumber.ToString("#0.00", CultureInfo.InvariantCulture)} {currencyCode}\n ";
         message += $"Tax = {tax} {currencyCode}\n ";
         if(calculatedDiscount!=0) message += $"Discounts = {discount} {currencyCode}\n ";
@@ -27,7 +26,7 @@ public class Report
             message += "no discounts";
             return message;
         }
-        if (calculations.CalculateUPCDiscount(product.Price,product.UPC)!=0)
+        if (product.UpcDiscount(accounting)!=0)
         {
             message += $"{discount} {currencyCode} total discount";
             return message;
